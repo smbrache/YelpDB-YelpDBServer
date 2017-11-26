@@ -95,6 +95,7 @@ public class YelpDB implements MP5Db {
      */
     public List<Restaurant> filterResByCat(String inputCategory) {
         // TODO: implement this Connor
+        // Status: On hold till Structured Queries
         return null;
     }
 
@@ -111,6 +112,7 @@ public class YelpDB implements MP5Db {
      */
     public List<Restaurant> filterResByLoc(String inputLocation) {
         // TODO: implement this Connor
+        // Status: On hold till Structured Queries
         return null;
     }
 
@@ -127,6 +129,7 @@ public class YelpDB implements MP5Db {
      */
     public List<Restaurant> filterResByRat(int inputRating) {
         // TODO: implement this Connor
+        // Status: On hold till Structured Queries
         return null;
     }
 
@@ -143,6 +146,7 @@ public class YelpDB implements MP5Db {
      */
     public List<Restaurant> filterResByPri(int inputPrice) {
         // TODO: implement this Connor
+        // Status: On hold till Structured Queries
         return null;
     }
 
