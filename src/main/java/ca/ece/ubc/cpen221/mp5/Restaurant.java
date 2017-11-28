@@ -24,7 +24,7 @@ public class Restaurant {
     private final String state;
     private final String city;
     private final String fullAddress;
-    private final String schools;
+    private final List<String> schools;
     private final List<String> neighborhoods;
     // RI: Immutable after initialization
 
@@ -63,24 +63,30 @@ public class Restaurant {
      * @param latitude double precision latitude geographic description
      * @param priceScore int price ranking (based on a 1-5 point scale)
      */
-    public Restaurant(boolean isOpen, String url, double longitude, List<String> neighborhoods, String businessId, String name, List<String> categories, String state, String type, double starScore, String city, String fullAddress, int reviewCount, String photoURL, String schools, double latitude, int priceScore) {
+	public Restaurant(boolean isOpen, String url, double longitude, List<String> neighborhoods, String businessId,
+			String name, List<String> categories, String state, String type, double starScore, String city,
+			String fullAddress, int reviewCount, String photoURL, List<String> schools, double latitude, int priceScore) {
+    	
         // Initialize immutable and preset data
+        this.type = type;
         this.isOpen = isOpen;
         this.url = url;
+
         this.longitude = longitude;
+        this.latitude = latitude;
+        this.state = state;
+        this.city = city;
+        this.fullAddress = fullAddress;
         this.neighborhoods = neighborhoods;
+        this.schools = schools;
+
         this.businessId = businessId;
         this.name = name;
         this.categories = categories;
-        this.state = state;
-        this.type = type;
+
         this.starScore = starScore;
-        this.city = city;
-        this.fullAddress = fullAddress;
         this.reviewCount = reviewCount;
         this.photoURL = photoURL;
-        this.schools = schools;
-        this.latitude = latitude;
         this.priceScore = priceScore;
 
         // Initialize restaurantReviews
@@ -213,7 +219,7 @@ public class Restaurant {
      * Associated school getter function
      * @return case-sensitive String of school
      */
-    public String getSchools() {
+    public List<String> getSchools() {
         return schools;
     }
 
