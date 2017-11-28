@@ -270,4 +270,13 @@ public class Restaurant {
     public List<Review> getRestaurantReviews() {
         return new ArrayList<>(restaurantReviews);
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Restaurant){
+            // Both Restaurant IDs must match
+            return (this.getBusinessId() == ((Restaurant) obj).getBusinessId());
+        }
+        return false;
+    }
 }

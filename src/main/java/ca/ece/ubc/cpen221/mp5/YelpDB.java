@@ -22,22 +22,25 @@ import javax.json.JsonReader;
 
 public class YelpDB implements MP5Db {
 
-	List<Restaurant> restaurantAll;
 	/**
 	 * RI: restaurantAll (and filter categories) are never null. They can contain
 	 * 0-n entries. restaurantAll contains no duplicate elements. Any Restaurant
 	 * element can appear in more than one category, or location, but no more than
 	 * one rating or price.
 	 *
-	 * AF: 0 <= restaurantAll.size() <= databaseCapacity restaurantAll.size() >=
-	 * restaurantByCategory.size(), restaurantByLocation.size(),
+	 * AF: 0 <= restaurantAll.size() <= databaseCapacity
+	 * restaurantAll.size() >= restaurantByCategory.size(), restaurantByLocation.size(),
 	 * restaurantByRating.size(), restaurantByPrice.size()
 	 */
+	List<Restaurant> restaurantAll;
 
-	Map<String, List<Restaurant>> restaurantByCategory;
-	Map<String, List<Restaurant>> restaurantByLocation;
-	Map<Integer, List<Restaurant>> restaurantByRating;
-	Map<Integer, List<Restaurant>> restaurantByPrice;
+	/**
+	 * RI: reviewAll is not null. It can contain 0-n entries. reviewALl contains no
+	 * duplicate elements
+	 *
+	 * AF: 0 <= reviewAll.size() <= databaseCapacity
+	 */
+	List<Review> reviewAll;
 
 	/**
 	 * RI: userAll is not null. It can contain 0-n entries. userAll contains no
@@ -47,17 +50,25 @@ public class YelpDB implements MP5Db {
 	 */
 	List<User> userAll;
 
-	List<Review> reviewAll;
+	/* Will keep commented unless necessary
+	Map<String, List<Restaurant>> restaurantByCategory;
+	Map<String, List<Restaurant>> restaurantByLocation;
+	Map<Integer, List<Restaurant>> restaurantByRating;
+	Map<Integer, List<Restaurant>> restaurantByPrice;
+	*/
 
 	public YelpDB() {
-		// TODO: construct empty YelpDB Sam
+		// TODO: test constructor
 		this.restaurantAll = new ArrayList<Restaurant>();
+		this.reviewAll = new ArrayList<Review>();
+		this.userAll = new ArrayList<User>();
+
+		/* Will keep commented unless necessary
 		this.restaurantByCategory = new HashMap<String, List<Restaurant>>();
 		this.restaurantByLocation = new HashMap<String, List<Restaurant>>();
 		this.restaurantByPrice = new HashMap<Integer, List<Restaurant>>();
 		this.restaurantByRating = new HashMap<Integer, List<Restaurant>>();
-		this.reviewAll = new ArrayList<Review>();
-		this.userAll = new ArrayList<User>();
+		*/
 	}
 
 	/**
@@ -77,18 +88,21 @@ public class YelpDB implements MP5Db {
 	 *             incorrect format
 	 */
 	public YelpDB(String restaurantsJSON, String reviewsJSON, String usersJSON) throws IOException {
-		// TODO: construct initialized YelpDB Sam
+		// TODO: test constructor
 		this.restaurantAll = new ArrayList<Restaurant>();
+		this.reviewAll = new ArrayList<Review>();
+		this.userAll = new ArrayList<User>();
+
+		/* Will keep commented unless necessary
 		this.restaurantByCategory = new HashMap<String, List<Restaurant>>();
 		this.restaurantByLocation = new HashMap<String, List<Restaurant>>();
 		this.restaurantByPrice = new HashMap<Integer, List<Restaurant>>();
 		this.restaurantByRating = new HashMap<Integer, List<Restaurant>>();
-		this.reviewAll = new ArrayList<Review>();
-		this.userAll = new ArrayList<User>();
+		*/
+
 		parseRestaurantJSON(restaurantsJSON);
 		parseReviewJSON(reviewsJSON);
 		parseUserJSON(usersJSON);
-
 	}
 
 	/**
@@ -103,7 +117,7 @@ public class YelpDB implements MP5Db {
 	 * @throws IOException
 	 *             if file is null, is in incorrect format, or has invalid path
 	 */
-	// Changed to public and added return value for testing**************************************************
+	// Changed to public and added return value for testing***********************************************OK
 	public JsonObject parseRestaurantJSON(String restaurantsJSON) throws IOException {
 		// TODO: implement Restaurant JSON parser Sam
 
@@ -228,6 +242,7 @@ public class YelpDB implements MP5Db {
 				state, type, starScore, city, fullAddress, reviewCount, photoURL, schools, latitude, priceScore);
 
 		// Do we need to verify how contains works?/Override hashCode or equals methods?
+		// TODO: Implement a reliable equals method - Connor
 		if (!this.restaurantAll.contains(newRestaurant)) {
 			 this.restaurantAll.add(newRestaurant);
 		}
