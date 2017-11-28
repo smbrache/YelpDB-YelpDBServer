@@ -175,4 +175,13 @@ public class Review {
     public int[] getVotes() {
         return Arrays.copyOf(votes, votes.length);
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Review){
+            // Both Restaurant IDs must match
+            return (this.getReviewId() == ((Review) obj).getReviewId());
+        }
+        return false;
+    }
 }

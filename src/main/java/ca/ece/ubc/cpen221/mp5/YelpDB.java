@@ -5,14 +5,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 //import com.sun.xml.internal.bind.v2.TODO;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.function.ToDoubleBiFunction;
 
 import javax.json.Json;
@@ -22,22 +18,25 @@ import javax.json.JsonReader;
 
 public class YelpDB implements MP5Db {
 
-	List<Restaurant> restaurantAll;
 	/**
 	 * RI: restaurantAll (and filter categories) are never null. They can contain
 	 * 0-n entries. restaurantAll contains no duplicate elements. Any Restaurant
 	 * element can appear in more than one category, or location, but no more than
 	 * one rating or price.
 	 *
-	 * AF: 0 <= restaurantAll.size() <= databaseCapacity restaurantAll.size() >=
-	 * restaurantByCategory.size(), restaurantByLocation.size(),
+	 * AF: 0 <= restaurantAll.size() <= databaseCapacity
+	 * restaurantAll.size() >= restaurantByCategory.size(), restaurantByLocation.size(),
 	 * restaurantByRating.size(), restaurantByPrice.size()
 	 */
+	Set<Restaurant> restaurantAll;
 
-	Map<String, List<Restaurant>> restaurantByCategory;
-	Map<String, List<Restaurant>> restaurantByLocation;
-	Map<Integer, List<Restaurant>> restaurantByRating;
-	Map<Integer, List<Restaurant>> restaurantByPrice;
+	/**
+	 * RI: reviewAll is not null. It can contain 0-n entries. reviewALl contains no
+	 * duplicate elements
+	 *
+	 * AF: 0 <= reviewAll.size() <= databaseCapacity
+	 */
+	Set<Review> reviewAll;
 
 	/**
 	 * RI: userAll is not null. It can contain 0-n entries. userAll contains no
@@ -45,19 +44,27 @@ public class YelpDB implements MP5Db {
 	 *
 	 * AF: 0 <= userAll.size() <= databaseCapacity
 	 */
-	List<User> userAll;
+	Set<User> userAll;
 
-	List<Review> reviewAll;
+	/* Will keep commented unless necessary
+	Map<String, List<Restaurant>> restaurantByCategory;
+	Map<String, List<Restaurant>> restaurantByLocation;
+	Map<Integer, List<Restaurant>> restaurantByRating;
+	Map<Integer, List<Restaurant>> restaurantByPrice;
+	*/
 
 	public YelpDB() {
-		// TODO: construct empty YelpDB Sam
-		this.restaurantAll = new ArrayList<Restaurant>();
+		// TODO: test constructor
+		this.restaurantAll = new HashSet<>();
+		this.reviewAll = new HashSet<>();
+		this.userAll = new HashSet<>();
+
+		/* Will keep commented unless necessary
 		this.restaurantByCategory = new HashMap<String, List<Restaurant>>();
 		this.restaurantByLocation = new HashMap<String, List<Restaurant>>();
 		this.restaurantByPrice = new HashMap<Integer, List<Restaurant>>();
 		this.restaurantByRating = new HashMap<Integer, List<Restaurant>>();
-		this.reviewAll = new ArrayList<Review>();
-		this.userAll = new ArrayList<User>();
+		*/
 	}
 
 	/**
@@ -77,18 +84,21 @@ public class YelpDB implements MP5Db {
 	 *             incorrect format
 	 */
 	public YelpDB(String restaurantsJSON, String reviewsJSON, String usersJSON) throws IOException {
-		// TODO: construct initialized YelpDB Sam
-		this.restaurantAll = new ArrayList<Restaurant>();
+		// TODO: test constructor
+		this.restaurantAll = new HashSet<>();
+		this.reviewAll = new HashSet<>();
+		this.userAll = new HashSet<>();
+
+		/* Will keep commented unless necessary
 		this.restaurantByCategory = new HashMap<String, List<Restaurant>>();
 		this.restaurantByLocation = new HashMap<String, List<Restaurant>>();
 		this.restaurantByPrice = new HashMap<Integer, List<Restaurant>>();
 		this.restaurantByRating = new HashMap<Integer, List<Restaurant>>();
-		this.reviewAll = new ArrayList<Review>();
-		this.userAll = new ArrayList<User>();
+		*/
+
 		parseRestaurantJSON(restaurantsJSON);
 		parseReviewJSON(reviewsJSON);
 		parseUserJSON(usersJSON);
-
 	}
 
 	/**
@@ -106,6 +116,7 @@ public class YelpDB implements MP5Db {
 	// Changed to public and added return value for testing**************************************************
 	// Change Exception type to IllegalArgumentException and let java throw exception if file path is invalid?
 	// and just put in RI that file msut be a json but dont handle the case that the file passed isn't a json? 
+	// Changed to public and added return value for testing***********************************************OK
 	public JsonObject parseRestaurantJSON(String restaurantsJSON) throws IOException {
 		// TODO: implement Restaurant JSON parser Sam
 
@@ -246,6 +257,7 @@ public class YelpDB implements MP5Db {
 				state, type, starScore, city, fullAddress, reviewCount, photoURL, schools, latitude, priceScore);
 
 		// Do we need to verify how contains works?/Override hashCode or equals methods?
+		// TODO: Implement a reliable equals method - Connor
 		if (!this.restaurantAll.contains(newRestaurant)) {
 			 this.restaurantAll.add(newRestaurant);
 		}
@@ -392,18 +404,35 @@ public class YelpDB implements MP5Db {
 		return null;
 	}
 
+	/**
+	 * Basic Query system that performs simple operations
+	 *
+	 * Supported Operations:
+	 * index0: RESTAURANT, REVIEW, USER
+	 * index1: ID, BY
+	 * index2: if (BY && RESTAURANT) STAR (index3 [1-5]), PRICE (index3 [1-5]);
+	 *
+	 * ID: (RESTAURANT) businessId, (REVIEW) reviewId, (USER) userId
+	 *
+	 * @param queryString
+	 * @return
+	 */
 	public Set getMatches(String queryString) {
-		// To be implemented at a different MP stage
+		// Break queryString into a String[]
+
+		// Line by line analyze (and perform functions at a reasonable stage)
+
+		// Terminate
 		return null;
 	}
 
 	public String kMeansClusters_json(int k) {
-		// To be implemented at a different MP stage
+		// TODO: implement this
 		return null;
 	}
 
 	public ToDoubleBiFunction<MP5Db, String> getPredictorFunction(String user) {
-		// To be implemented at a different MP stage
+		// TODO: implement this
 		return null;
 	}
 }

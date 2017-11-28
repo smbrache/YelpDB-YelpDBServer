@@ -155,4 +155,13 @@ public class User {
     public List<Review> getUserReview() {
         return new ArrayList<>(userReviews);
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof User){
+            // Both Restaurant IDs must match
+            return (this.getUserId() == ((User) obj).getUserId());
+        }
+        return false;
+    }
 }
