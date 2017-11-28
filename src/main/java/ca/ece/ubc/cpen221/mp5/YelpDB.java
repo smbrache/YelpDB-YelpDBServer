@@ -104,9 +104,15 @@ public class YelpDB implements MP5Db {
 	 *             if file is null, is in incorrect format, or has invalid path
 	 */
 	// Changed to public and added return value for testing**************************************************
+	// Change Exception type to IllegalArgumentException and let java throw exception if file path is invalid?
+	// and just put in RI that file msut be a json but dont handle the case that the file passed isn't a json? 
 	public JsonObject parseRestaurantJSON(String restaurantsJSON) throws IOException {
 		// TODO: implement Restaurant JSON parser Sam
 
+		if(restaurantsJSON == null) {
+			throw new IOException();
+		}
+		
 		// parse restaurants
 		BufferedReader restaurantReader = new BufferedReader(new FileReader(restaurantsJSON));
 		String line;
@@ -133,9 +139,15 @@ public class YelpDB implements MP5Db {
 	 *             if file is null, is in incorrect format, or has invalid path
 	 */
 	// Changed to public and added return value for testing**************************************************
+	// Change Exception type to IllegalArgumentException and let java throw exception if file path is invalid?
+	// and just put in RI that file msut be a json but dont handle the case that the file passed isn't a json? 
 	public JsonObject parseReviewJSON(String reviewsJSON) throws IOException {
 		// TODO: implement Review JSON parser Sam
 
+		if(reviewsJSON == null) {
+			throw new IOException();
+		}
+		
 		// parse reviews
 		BufferedReader reviewReader = new BufferedReader(new FileReader(reviewsJSON));
 		String line;
@@ -161,10 +173,16 @@ public class YelpDB implements MP5Db {
 	 * @throws IOException
 	 *             if file is null, is in incorrect format, or has invalid path
 	 */
+	// Change Exception type to IllegalArgumentException and let java throw exception if file path is invalid?
+	// and just put in RI that file msut be a json but dont handle the case that the file passed isn't a json? 
 	// Changed to public and added return value for testing**************************************************
 	public JsonObject parseUserJSON(String usersJSON) throws IOException {
 		// TODO: implement User JSON parser Sam
 
+		if(usersJSON == null) {
+			throw new IOException();
+		}
+		
 		// parse users
 		BufferedReader userReader = new BufferedReader(new FileReader(usersJSON));
 		String line;
@@ -260,9 +278,9 @@ public class YelpDB implements MP5Db {
 		String userID = addedReview.getString("user_id");
 		String date = addedReview.getString("date");
 		int[] votes = new int[3];
-		votes[0] = addedReview.getInt("cool");
-		votes[1] = addedReview.getInt("useful");
-		votes[2] = addedReview.getInt("funny");
+		votes[0] = addedReview.getJsonObject("votes").getInt("cool");
+		votes[1] = addedReview.getJsonObject("votes").getInt("useful");
+		votes[2] = addedReview.getJsonObject("votes").getInt("funny");
 
 		Review newReview = new Review(type, businessID, votes, reviewID, text, starScore, userID, date);
 
@@ -291,9 +309,9 @@ public class YelpDB implements MP5Db {
 		String name = addedUser.getString("name");
 		double avgStars = addedUser.getJsonNumber("average_stars").doubleValue();
 		int[] votes = new int[3];
-		votes[0] = addedUser.getInt("cool");
-		votes[1] = addedUser.getInt("useful");
-		votes[2] = addedUser.getInt("funny");
+		votes[0] = addedUser.getJsonObject("votes").getInt("cool");
+		votes[1] = addedUser.getJsonObject("votes").getInt("useful");
+		votes[2] = addedUser.getJsonObject("votes").getInt("funny");
 
 		User newUser = new User(url, votes, reviewCount, type, userID, name, avgStars);
 		
