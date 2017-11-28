@@ -5,14 +5,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 //import com.sun.xml.internal.bind.v2.TODO;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.function.ToDoubleBiFunction;
 
 import javax.json.Json;
@@ -32,7 +28,7 @@ public class YelpDB implements MP5Db {
 	 * restaurantAll.size() >= restaurantByCategory.size(), restaurantByLocation.size(),
 	 * restaurantByRating.size(), restaurantByPrice.size()
 	 */
-	List<Restaurant> restaurantAll;
+	Set<Restaurant> restaurantAll;
 
 	/**
 	 * RI: reviewAll is not null. It can contain 0-n entries. reviewALl contains no
@@ -40,7 +36,7 @@ public class YelpDB implements MP5Db {
 	 *
 	 * AF: 0 <= reviewAll.size() <= databaseCapacity
 	 */
-	List<Review> reviewAll;
+	Set<Review> reviewAll;
 
 	/**
 	 * RI: userAll is not null. It can contain 0-n entries. userAll contains no
@@ -48,7 +44,7 @@ public class YelpDB implements MP5Db {
 	 *
 	 * AF: 0 <= userAll.size() <= databaseCapacity
 	 */
-	List<User> userAll;
+	Set<User> userAll;
 
 	/* Will keep commented unless necessary
 	Map<String, List<Restaurant>> restaurantByCategory;
@@ -59,9 +55,9 @@ public class YelpDB implements MP5Db {
 
 	public YelpDB() {
 		// TODO: test constructor
-		this.restaurantAll = new ArrayList<Restaurant>();
-		this.reviewAll = new ArrayList<Review>();
-		this.userAll = new ArrayList<User>();
+		this.restaurantAll = new HashSet<>();
+		this.reviewAll = new HashSet<>();
+		this.userAll = new HashSet<>();
 
 		/* Will keep commented unless necessary
 		this.restaurantByCategory = new HashMap<String, List<Restaurant>>();
@@ -89,9 +85,9 @@ public class YelpDB implements MP5Db {
 	 */
 	public YelpDB(String restaurantsJSON, String reviewsJSON, String usersJSON) throws IOException {
 		// TODO: test constructor
-		this.restaurantAll = new ArrayList<Restaurant>();
-		this.reviewAll = new ArrayList<Review>();
-		this.userAll = new ArrayList<User>();
+		this.restaurantAll = new HashSet<>();
+		this.reviewAll = new HashSet<>();
+		this.userAll = new HashSet<>();
 
 		/* Will keep commented unless necessary
 		this.restaurantByCategory = new HashMap<String, List<Restaurant>>();
@@ -389,18 +385,35 @@ public class YelpDB implements MP5Db {
 		return null;
 	}
 
+	/**
+	 * Basic Query system that performs simple operations
+	 *
+	 * Supported Operations:
+	 * index0: RESTAURANT, REVIEW, USER
+	 * index1: ID, BY
+	 * index2: if (BY && RESTAURANT) STAR (index3 [1-5]), PRICE (index3 [1-5]);
+	 *
+	 * ID: (RESTAURANT) businessId, (REVIEW) reviewId, (USER) userId
+	 *
+	 * @param queryString
+	 * @return
+	 */
 	public Set getMatches(String queryString) {
-		// To be implemented at a different MP stage
+		// Break queryString into a String[]
+
+		// Line by line analyze (and perform functions at a reasonable stage)
+
+		// Terminate
 		return null;
 	}
 
 	public String kMeansClusters_json(int k) {
-		// To be implemented at a different MP stage
+		// TODO: implement this
 		return null;
 	}
 
 	public ToDoubleBiFunction<MP5Db, String> getPredictorFunction(String user) {
-		// To be implemented at a different MP stage
+		// TODO: implement this
 		return null;
 	}
 }
