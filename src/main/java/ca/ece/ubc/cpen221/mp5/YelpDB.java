@@ -24,8 +24,8 @@ public class YelpDB implements MP5Db {
 	 * element can appear in more than one category, or location, but no more than
 	 * one rating or price.
 	 *
-	 * AF: 0 <= restaurantAll.size() <= databaseCapacity
-	 * restaurantAll.size() >= restaurantByCategory.size(), restaurantByLocation.size(),
+	 * AF: 0 <= restaurantAll.size() <= databaseCapacity restaurantAll.size() >=
+	 * restaurantByCategory.size(), restaurantByLocation.size(),
 	 * restaurantByRating.size(), restaurantByPrice.size()
 	 */
 	Set<Restaurant> restaurantAll;
@@ -46,25 +46,43 @@ public class YelpDB implements MP5Db {
 	 */
 	Set<User> userAll;
 
-	/* Will keep commented unless necessary
-	Map<String, List<Restaurant>> restaurantByCategory;
-	Map<String, List<Restaurant>> restaurantByLocation;
-	Map<Integer, List<Restaurant>> restaurantByRating;
-	Map<Integer, List<Restaurant>> restaurantByPrice;
-	*/
-
+	/*
+	 * Will keep commented unless necessary Map<String, List<Restaurant>>
+	 * restaurantByCategory; Map<String, List<Restaurant>> restaurantByLocation;
+	 * Map<Integer, List<Restaurant>> restaurantByRating; Map<Integer,
+	 * List<Restaurant>> restaurantByPrice;
+	 */
+	
+	/**
+	 * RI:
+	 * 
+	 * AF:
+	 */
+	Map<Restaurant, double[]> restCoordMap;
+	
+	/**
+	 * RI:
+	 * 
+	 * AF:
+	 */
+	Map<double[], Set<Restaurant>> centroidClusterMap;
+	
+	//FOR TESTING
+	Restaurant firstRestaurant;
+	
 	public YelpDB() {
 		// TODO: test constructor
 		this.restaurantAll = new HashSet<>();
 		this.reviewAll = new HashSet<>();
 		this.userAll = new HashSet<>();
-
-		/* Will keep commented unless necessary
-		this.restaurantByCategory = new HashMap<String, List<Restaurant>>();
-		this.restaurantByLocation = new HashMap<String, List<Restaurant>>();
-		this.restaurantByPrice = new HashMap<Integer, List<Restaurant>>();
-		this.restaurantByRating = new HashMap<Integer, List<Restaurant>>();
-		*/
+		this.restCoordMap = new HashMap<Restaurant, double[]>();
+		/*
+		 * Will keep commented unless necessary this.restaurantByCategory = new
+		 * HashMap<String, List<Restaurant>>(); this.restaurantByLocation = new
+		 * HashMap<String, List<Restaurant>>(); this.restaurantByPrice = new
+		 * HashMap<Integer, List<Restaurant>>(); this.restaurantByRating = new
+		 * HashMap<Integer, List<Restaurant>>();
+		 */
 	}
 
 	/**
@@ -88,15 +106,32 @@ public class YelpDB implements MP5Db {
 		this.restaurantAll = new HashSet<>();
 		this.reviewAll = new HashSet<>();
 		this.userAll = new HashSet<>();
-
-		/* Will keep commented unless necessary
-		this.restaurantByCategory = new HashMap<String, List<Restaurant>>();
-		this.restaurantByLocation = new HashMap<String, List<Restaurant>>();
-		this.restaurantByPrice = new HashMap<Integer, List<Restaurant>>();
-		this.restaurantByRating = new HashMap<Integer, List<Restaurant>>();
-		*/
+		this.restCoordMap = new HashMap<Restaurant, double[]>();
+		this.centroidClusterMap = new HashMap<double[], Set<Restaurant>>();
+		
+		/*
+		 * Will keep commented unless necessary this.restaurantByCategory = new
+		 * HashMap<String, List<Restaurant>>(); this.restaurantByLocation = new
+		 * HashMap<String, List<Restaurant>>(); this.restaurantByPrice = new
+		 * HashMap<Integer, List<Restaurant>>(); this.restaurantByRating = new
+		 * HashMap<Integer, List<Restaurant>>();
+		 */
 
 		parseRestaurantJSON(restaurantsJSON);
+		// double[] restCoords: restCoords[0] is x-coord (latitude)
+		// 						restCoords[1] is y-coord (longitude)
+		double[] restCoords = new double[2];
+		
+		// Map each restaurant to double[] containing its coordinates
+		for (Restaurant r : this.restaurantAll) {
+			restCoords[0] = r.getLatitude();
+			restCoords[1] = r.getLongitude();
+			this.restCoordMap.put(r, Arrays.copyOf(restCoords, restCoords.length));
+			System.out.println("restaurant put into restCoordMap: " + r.toString());
+			System.out.println("Latitude: " + this.restCoordMap.get(r)[0] + " Longitude: " + this.restCoordMap.get(r)[1]);
+			System.out.println("first Restaurant map entry coordinates: Latitude: " + this.restCoordMap.get(firstRestaurant)[0] + " Longitude: " + this.restCoordMap.get(firstRestaurant)[1]);
+		}
+		
 		parseReviewJSON(reviewsJSON);
 		parseUserJSON(usersJSON);
 	}
@@ -113,17 +148,17 @@ public class YelpDB implements MP5Db {
 	 * @throws IOException
 	 *             if file is null, is in incorrect format, or has invalid path
 	 */
-	// Changed to public and added return value for testing**************************************************
-	// Change Exception type to IllegalArgumentException and let java throw exception if file path is invalid?
-	// and just put in RI that file msut be a json but dont handle the case that the file passed isn't a json? 
-	// Changed to public and added return value for testing***********************************************OK
-	public JsonObject parseRestaurantJSON(String restaurantsJSON) throws IOException {
+	// Change Exception type to IllegalArgumentException and let java throw
+	// exception if file path is invalid?
+	// and just put in RI that file msut be a json but dont handle the case that the
+	// file passed isn't a json?
+	private void parseRestaurantJSON(String restaurantsJSON) throws IOException {
 		// TODO: implement Restaurant JSON parser Sam
 
-		if(restaurantsJSON == null) {
+		if (restaurantsJSON == null) {
 			throw new IOException();
 		}
-		
+
 		// parse restaurants
 		BufferedReader restaurantReader = new BufferedReader(new FileReader(restaurantsJSON));
 		String line;
@@ -132,10 +167,10 @@ public class YelpDB implements MP5Db {
 			JsonReader parseRestaurant = Json.createReader(sr);
 			JsonObject restaurant = parseRestaurant.readObject();
 			addRestaurant(restaurant);// remove
-			return restaurant;
+			//return restaurant;
 		}
 		restaurantReader.close();
-		return null;// remove
+		//return null;
 	}
 
 	/**
@@ -149,16 +184,17 @@ public class YelpDB implements MP5Db {
 	 * @throws IOException
 	 *             if file is null, is in incorrect format, or has invalid path
 	 */
-	// Changed to public and added return value for testing**************************************************
-	// Change Exception type to IllegalArgumentException and let java throw exception if file path is invalid?
-	// and just put in RI that file msut be a json but dont handle the case that the file passed isn't a json? 
-	public JsonObject parseReviewJSON(String reviewsJSON) throws IOException {
+	// Change Exception type to IllegalArgumentException and let java throw
+	// exception if file path is invalid?
+	// and just put in RI that file msut be a json but dont handle the case that the
+	// file passed isn't a json?
+	private void parseReviewJSON(String reviewsJSON) throws IOException {
 		// TODO: implement Review JSON parser Sam
 
-		if(reviewsJSON == null) {
+		if (reviewsJSON == null) {
 			throw new IOException();
 		}
-		
+
 		// parse reviews
 		BufferedReader reviewReader = new BufferedReader(new FileReader(reviewsJSON));
 		String line;
@@ -167,10 +203,10 @@ public class YelpDB implements MP5Db {
 			JsonReader parseReview = Json.createReader(sr);
 			JsonObject review = parseReview.readObject();
 			addReview(review);// remove
-			return review;
+			//return review;
 		}
 		reviewReader.close();
-		return null;// remove
+		//return null;
 	}
 
 	/**
@@ -184,16 +220,17 @@ public class YelpDB implements MP5Db {
 	 * @throws IOException
 	 *             if file is null, is in incorrect format, or has invalid path
 	 */
-	// Change Exception type to IllegalArgumentException and let java throw exception if file path is invalid?
-	// and just put in RI that file msut be a json but dont handle the case that the file passed isn't a json? 
-	// Changed to public and added return value for testing**************************************************
-	public JsonObject parseUserJSON(String usersJSON) throws IOException {
+	// Change Exception type to IllegalArgumentException and let java throw
+	// exception if file path is invalid?
+	// and just put in RI that file msut be a json but dont handle the case that the
+	// file passed isn't a json?
+	private void parseUserJSON(String usersJSON) throws IOException {
 		// TODO: implement User JSON parser Sam
 
-		if(usersJSON == null) {
+		if (usersJSON == null) {
 			throw new IOException();
 		}
-		
+
 		// parse users
 		BufferedReader userReader = new BufferedReader(new FileReader(usersJSON));
 		String line;
@@ -202,10 +239,10 @@ public class YelpDB implements MP5Db {
 			JsonReader parseUser = Json.createReader(sr);
 			JsonObject user = parseUser.readObject();
 			addUser(user);// remove
-			return user;
+			//return user;
 		}
 		userReader.close();
-		return null;// remove
+		//return null;
 	}
 
 	/**
@@ -256,10 +293,20 @@ public class YelpDB implements MP5Db {
 		Restaurant newRestaurant = new Restaurant(isOpen, url, longitude, neighborhoods, businessID, name, categories,
 				state, type, starScore, city, fullAddress, reviewCount, photoURL, schools, latitude, priceScore);
 
+		//FOR TESTING
+		double[] restCoords = new double[2];
+		if(this.restaurantAll.isEmpty()) {
+			this.firstRestaurant = newRestaurant;
+			restCoords[0] = firstRestaurant.getLatitude();
+			restCoords[1] = firstRestaurant.getLongitude();
+			this.restCoordMap.put(firstRestaurant, restCoords);
+		}
+		
 		// Do we need to verify how contains works?/Override hashCode or equals methods?
 		// TODO: Implement a reliable equals method - Connor
 		if (!this.restaurantAll.contains(newRestaurant)) {
-			 this.restaurantAll.add(newRestaurant);
+			this.restaurantAll.add(newRestaurant);
+			System.out.println(newRestaurant.toString());
 		}
 
 	}
@@ -326,7 +373,7 @@ public class YelpDB implements MP5Db {
 		votes[2] = addedUser.getJsonObject("votes").getInt("funny");
 
 		User newUser = new User(url, votes, reviewCount, type, userID, name, avgStars);
-		
+
 		if (!userAll.contains(newUser)) {
 			userAll.add(newUser);
 		}
@@ -407,10 +454,8 @@ public class YelpDB implements MP5Db {
 	/**
 	 * Basic Query system that performs simple operations
 	 *
-	 * Supported Operations:
-	 * index0: RESTAURANT, REVIEW, USER
-	 * index1: ID, BY
-	 * index2: if (BY && RESTAURANT) STAR (index3 [1-5]), PRICE (index3 [1-5]);
+	 * Supported Operations: index0: RESTAURANT, REVIEW, USER index1: ID, BY index2:
+	 * if (BY && RESTAURANT) STAR (index3 [1-5]), PRICE (index3 [1-5]);
 	 *
 	 * ID: (RESTAURANT) businessId, (REVIEW) reviewId, (USER) userId
 	 *
@@ -426,11 +471,172 @@ public class YelpDB implements MP5Db {
 		return null;
 	}
 
+	public List<Restaurant> getRestaurantAll() {
+		List<Restaurant> restaurantAllCopy = new ArrayList<Restaurant>();
+		for (Restaurant r : this.restaurantAll) {
+			restaurantAllCopy.add(r);
+		}
+		return restaurantAllCopy;
+	}
+
+	// Probably don't need these
+	//
+	// public List<Review> getReviewAll(){
+	// List<Review> reviewAllCopy = new ArrayList<Review>();
+	// for(Review r : this.reviewAll) {
+	// reviewAllCopy.add(r);
+	// }
+	// return reviewAllCopy;
+	// }
+	//
+	// public List<User> getUserAll(){
+	// List<User> userAllCopy = new ArrayList<User>();
+	// for(User r : this.userAll) {
+	// userAllCopy.add(r);
+	// }
+	// return userAllCopy;
+	// }
+
 	public String kMeansClusters_json(int k) {
 		// TODO: implement this
+		
+		List<Set<Restaurant>> kMeansClusters = this.kMeansClustering(k);
+		String kMeansClusterString = kMeansClusters.toString();
+		
 		return null;
 	}
 
+	public List<Set<Restaurant>> kMeansClustering(int k) {
+
+		List<Set<Restaurant>> kMeansClusters = new ArrayList<Set<Restaurant>>();
+		List<double[]> centroidList = new ArrayList<double[]>();
+
+		// double[] centroidCoords: centroidCoords[0] is x-coord (latitude)
+		// 							centroidCoords[1] is y-coord (longitude)
+		double[] centroidCoords = new double[2];
+		List<Restaurant> allRestaurants = this.getRestaurantAll();
+		Restaurant r;
+		
+		// Initialize centroid coordinates
+		Collections.shuffle(new ArrayList<Restaurant>(this.restaurantAll));
+		for(int i = 0; i < k; i++) {
+			if (i < allRestaurants.size()) {
+				r = allRestaurants.get(i);
+				System.out.println("restaurant chosen as centroid: " + r.toString());
+				System.out.println("Latitude: " + this.restCoordMap.get(r)[0] + " Longitude: " + this.restCoordMap.get(r)[1]);
+				centroidCoords = this.restCoordMap.get(r);
+				centroidList.add(centroidCoords);
+			}
+		}
+		
+		List<double[]> prevCentroidList;
+		boolean centroidsChanged = true;
+		
+		do {
+			prevCentroidList = centroidList;
+			this.group(centroidList);
+			System.out.println("Number of centroids after group(): " + centroidList.size());
+			
+			centroidList = this.recalculateCentroids(centroidList);
+			System.out.println("Number of centroids after recalculateCentroids(): " + centroidList.size());
+			
+			//Does this comparison work?
+			if(prevCentroidList.equals(centroidList)) {
+				centroidsChanged = false;
+			}
+		}while(centroidsChanged);
+		
+		for(Map.Entry<double[], Set<Restaurant>> centroidClusterMapEntry : this.centroidClusterMap.entrySet()) {
+			if((centroidClusterMapEntry.getValue()).isEmpty()) {
+				return this.kMeansClustering(k);
+			} else {
+				kMeansClusters.add(centroidClusterMapEntry.getValue());
+			}
+		}
+		
+		return kMeansClusters;
+	}
+	
+	/**
+	 * 
+	 * @param centroidList
+	 * @return
+	 */
+	private List<double[]> recalculateCentroids(List<double[]> centroidList) {
+		centroidList.removeAll(centroidList);
+		
+		// double[] centroidCoords: centroidCoords[0] is x-coord (latitude)
+		// 							centroidCoords[1] is y-coord (longitude)
+		double[] centroidCoords = new double[2];
+		double avgLat = 0;
+		double avgLong = 0;
+		double totLat = 0;
+		double totLong = 0;
+		System.out.println("Number of map entries in centroidClusterMap (recalculateCentroids()): " + centroidClusterMap.entrySet().size());
+
+		for(Map.Entry<double[], Set<Restaurant>> centroidClusterEntry : centroidClusterMap.entrySet()) {
+			Set<Restaurant> restSet = centroidClusterEntry.getValue();
+			for(Restaurant resto : restSet) {
+				totLat += resto.getLatitude();
+				totLong += resto.getLongitude();
+			}
+			avgLat = totLat/(restSet.size());
+			avgLong = totLong/(restSet.size());
+			centroidCoords[0] = avgLat;
+			centroidCoords[1] = avgLong;
+			centroidList.add(centroidCoords);
+		}
+		return centroidList;
+	}
+	
+	/**
+	 * 
+	 * @param centroidList
+	 */
+	private void group(List<double[]> centroidList){
+		
+		System.out.println("Number of clusters (group()): " + centroidList.size());
+		int iterations = 0;
+		for(double[] centroid : centroidList) {
+			centroidClusterMap.put(centroid, new HashSet<Restaurant>());
+			iterations++;
+		}
+		System.out.println("number of map entries put: " + iterations);
+		System.out.println("Number of map entries in centroidClusterMap (group()): " + centroidClusterMap.entrySet().size());
+		
+		double[] closestCentroid = null;
+		for(Restaurant rest : this.restaurantAll) {
+			double minDist = Double.MAX_VALUE;
+			for(double [] centroid : centroidList) {
+				if(Distance(restCoordMap.get(rest), centroid) < minDist) {
+					minDist = Distance(restCoordMap.get(rest), centroid);
+					closestCentroid = centroid;
+				}
+			}
+			(centroidClusterMap.get(closestCentroid)).add(rest);
+		}
+	}
+
+	/**
+	 * Returns the distance between a restaurant and the centroid of a k-mean
+	 * cluster.
+	 * 
+	 * @requires: restaurantCoords and centroid are not null
+	 * 
+	 * @param restaurantCoords
+	 *            the cartesian coordinates of the restaurant
+	 * @param centroid
+	 *            the cartesian coordinates of the centroid
+	 * @return the distance between the restaurant and the centroid
+	 */
+	private static double Distance(double[] restaurantCoords, double[] centroid) {
+		double distance;
+		double xDist = Math.abs(centroid[0] - restaurantCoords[0]);
+		double yDist = Math.abs(centroid[1] - restaurantCoords[1]);
+		distance = Math.sqrt(Math.pow(xDist, 2) + Math.pow(yDist, 2));
+		return distance;
+	}
+	
 	public ToDoubleBiFunction<MP5Db, String> getPredictorFunction(String user) {
 		// TODO: implement this
 		return null;
