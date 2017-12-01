@@ -27,7 +27,7 @@ public class User {
     // Votes total can be any x, MIN_INTEGER < x < MAX_INTEGER
 
     /* User review collection */
-    List<Review> userReviews;
+    private List<Review> userReviews;
     // RI: userReviews is not null
     // userReviews.size() == reviewCount
 
@@ -54,6 +54,12 @@ public class User {
 
         // Initialize userReviews
         userReviews = new ArrayList<>();
+    }
+
+    public void addReview(Review inputReview, boolean initCollection) {
+        userReviews.add(inputReview);
+        if (!initCollection)
+            reviewCount++;
     }
 
     /**

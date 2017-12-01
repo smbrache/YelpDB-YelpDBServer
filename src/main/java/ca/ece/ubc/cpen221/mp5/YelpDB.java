@@ -1,5 +1,7 @@
 package ca.ece.ubc.cpen221.mp5;
 
+import com.sun.org.apache.regexp.internal.RE;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -16,7 +18,7 @@ import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 
-public class YelpDB implements MP5Db {
+public class YelpDB extends AbstractMP5Db<Restaurant> {
 
 	/**
 	 * RI: restaurantAll (and filter categories) are never null. They can contain
@@ -45,15 +47,9 @@ public class YelpDB implements MP5Db {
 	 * AF: 0 <= userAll.size() <= databaseCapacity
 	 */
 	Set<User> userAll;
-
-	/*
-	 * Will keep commented unless necessary Map<String, List<Restaurant>>
-	 * restaurantByCategory; Map<String, List<Restaurant>> restaurantByLocation;
-	 * Map<Integer, List<Restaurant>> restaurantByRating; Map<Integer,
-	 * List<Restaurant>> restaurantByPrice;
-	 */
 	
 	/**
+	 * //Todo: Write for this?
 	 * RI:
 	 * 
 	 * AF:
@@ -61,6 +57,7 @@ public class YelpDB implements MP5Db {
 	Map<Restaurant, double[]> restCoordMap;
 	
 	/**
+//	 * //Todo: Write for this?
 	 * RI:
 	 * 
 	 * AF:
@@ -73,31 +70,25 @@ public class YelpDB implements MP5Db {
 		this.restaurantAll = new HashSet<>();
 		this.reviewAll = new HashSet<>();
 		this.userAll = new HashSet<>();
+
 		this.restCoordMap = new HashMap<Restaurant, double[]>();
-		/*
-		 * Will keep commented unless necessary this.restaurantByCategory = new
-		 * HashMap<String, List<Restaurant>>(); this.restaurantByLocation = new
-		 * HashMap<String, List<Restaurant>>(); this.restaurantByPrice = new
-		 * HashMap<Integer, List<Restaurant>>(); this.restaurantByRating = new
-		 * HashMap<Integer, List<Restaurant>>();
-		 */
 	}
 
 	/**
-	 * Creates a new YelpDB initialized with data from three .json files.
+	 * Creates a new YelpDB initialized with data from three .JSON files.
+	 * //todo: something about the restcoordmap centroid cluster map
 	 * 
 	 * @requires restaurantsJSON, reviewsJSON, usersJSON are not null, have valid
 	 *           paths, and are in correct format
 	 * 
-	 * @param restaurantsJSON
-	 *            the .json file containing restaurant specific data
-	 * @param reviewsJSON
-	 *            the .json file containing review specific data
-	 * @param usersJSON
-	 *            the .json file containing user specific data
-	 * @throws IOException
-	 *             if any of the .json files are null, have invalid paths, or are in
-	 *             incorrect format
+	 * @param restaurantsJSON the restaurant .JSON file
+	 *
+	 * @param reviewsJSON the reviews .JSON file
+	 *
+	 * @param usersJSON the user .JSON file
+	 *
+	 * @throws IOException if any of the .JSON files are null, have invalid paths, or are in
+	 * an incorrect format
 	 */
 	public YelpDB(String restaurantsJSON, String reviewsJSON, String usersJSON) throws IOException {
 		// TODO: test constructor
@@ -106,14 +97,6 @@ public class YelpDB implements MP5Db {
 		this.userAll = new HashSet<>();
 		this.restCoordMap = new HashMap<Restaurant, double[]>();
 		this.centroidClusterMap = new HashMap<double[], Set<Restaurant>>();
-		
-		/*
-		 * Will keep commented unless necessary this.restaurantByCategory = new
-		 * HashMap<String, List<Restaurant>>(); this.restaurantByLocation = new
-		 * HashMap<String, List<Restaurant>>(); this.restaurantByPrice = new
-		 * HashMap<Integer, List<Restaurant>>(); this.restaurantByRating = new
-		 * HashMap<Integer, List<Restaurant>>();
-		 */
 
 		parseRestaurantJSON(restaurantsJSON);
 		// double[] restCoords: restCoords[0] is x-coord (latitude)
@@ -126,9 +109,9 @@ public class YelpDB implements MP5Db {
 			restCoords[1] = r.getLongitude();
 			this.restCoordMap.put(r, Arrays.copyOf(restCoords, restCoords.length));
 		}
-		
-		parseReviewJSON(reviewsJSON);
+
 		parseUserJSON(usersJSON);
+		parseReviewJSON(reviewsJSON);
 	}
 
 	/**
@@ -287,9 +270,7 @@ public class YelpDB implements MP5Db {
 
 		Restaurant newRestaurant = new Restaurant(isOpen, url, longitude, neighborhoods, businessID, name, categories,
 				state, type, starScore, city, fullAddress, reviewCount, photoURL, schools, latitude, priceScore);
-		
-		// Do we need to verify how contains works?/Override hashCode or equals methods?
-		// TODO: Implement a reliable equals method - Connor
+
 		if (!this.restaurantAll.contains(newRestaurant)) {
 			this.restaurantAll.add(newRestaurant);
 		}
@@ -330,6 +311,13 @@ public class YelpDB implements MP5Db {
 
 		if (!reviewAll.contains(newReview)) {
 			reviewAll.add(newReview);
+		}
+
+		for (User currUser : userAll) {
+			if (newReview.getUserId().equals(currUser.getUserId())) {
+				currUser.addReview(newReview, true);
+				break;
+			}
 		}
 
 	}
@@ -437,23 +425,25 @@ public class YelpDB implements MP5Db {
 	}
 
 	/**
-	 * Basic Query system that performs simple operations
+	 * getMatches finds and returns a single-set Restaurant that matches
+	 * the ID of the queryString
 	 *
-	 * Supported Operations: index0: RESTAURANT, REVIEW, USER index1: ID, BY index2:
-	 * if (BY && RESTAURANT) STAR (index3 [1-5]), PRICE (index3 [1-5]);
+	 * @param queryString the restaurantID of the search target object
 	 *
-	 * ID: (RESTAURANT) businessId, (REVIEW) reviewId, (USER) userId
-	 *
-	 * @param queryString
-	 * @return
+	 * @return a single-set reference to a Restaurant if it exists in the database
+	 * and an empty-set if it does not
 	 */
-	public Set getMatches(String queryString) {
-		// Break queryString into a String[]
+	public Set<Restaurant> getMatches(String queryString) {
+		Set<Restaurant> returnSet = new HashSet<>();
 
-		// Line by line analyze (and perform functions at a reasonable stage)
-
-		// Terminate
-		return null;
+		for (Restaurant currRestaurant : restaurantAll) {
+			// If a match is found, add it and exit the loop
+			if (currRestaurant.getBusinessId().equals(queryString)) {
+				returnSet.add(currRestaurant);
+				break;
+			}
+		}
+		return returnSet;
 	}
 
 	public List<Restaurant> getRestaurantAll() {
@@ -622,9 +612,118 @@ public class YelpDB implements MP5Db {
 		distance = Math.sqrt(Math.pow(xDist, 2) + Math.pow(yDist, 2));
 		return distance;
 	}
-	
-	public ToDoubleBiFunction<MP5Db, String> getPredictorFunction(String user) {
-		// TODO: implement this
+
+
+	/**
+	 * Returns a predictor function that estimates a user's potential rating of a restaurant
+	 * derived from the least squares linear regression formula
+	 *
+	 * @param user is a valid userID in the database
+	 *
+	 * @return a functional interface that estimates the potential user rating of a restaurant
+	 * (clamped between 1-5) given a MP5Db<Restaurant> and String representation of businessID
+	 * are supplied, else, an always 0 function if the userID does not exist
+	 *
+	 * @requires YelpDB database is complete and all reviews point to valid restaurants
+	 */
+	public ToDoubleBiFunction<MP5Db<Restaurant>, String> getPredictorFunction(String user) {
+		User reqUser = searchUser(user);
+		ToDoubleBiFunction<MP5Db<Restaurant>, String> leastSquaresRegression = (x,y) -> 0;
+
+		// User cannot be found in the database
+		if (reqUser == null)
+			return leastSquaresRegression;
+
+		List<Integer> allX = new ArrayList<>();
+		List<Integer> allY = new ArrayList<>();
+		double xTot = 0.0;
+		double yTot = 0.0;
+
+		System.out.println("Num Reviews " + reqUser.getUserReview().size());
+
+		for (Review currReview : reqUser.getUserReview()) {
+			// Retrieve the restaurant price score
+			allX.add(searchRestaurant(currReview.getBusinessId()).getPriceScore());
+			xTot += allX.get(allX.size() - 1);
+			// Retrieve the user rating score
+			allY.add(currReview.getStars());
+			yTot += allY.get(allY.size() - 1);
+			System.out.println("xCurr: " + allX.get(allX.size()-1) + " yTot: " + currReview.getStars());
+		}
+		System.out.println("xTot: " + xTot + " yTot: " + yTot);
+		// No reviews for the userID
+		if (xTot == 0)
+			return leastSquaresRegression;
+
+		// Reconvert xTot and yTot into mean(x) and mean(y)
+		xTot = xTot/allX.size();
+		yTot = yTot/allY.size();
+
+		System.out.println("xTot: " + xTot + " yTot: " + yTot);
+
+		// Calculate the sums of squares sXX, sXY
+		double sXX = 0.0;
+		double sXY = 0.0;
+		for (int i = 0; i < allX.size(); i++) {
+			sXX += Math.pow((allX.get(i) - xTot), 2.0);
+			sXY += (allX.get(i) - xTot)*(allY.get(i) - yTot);
+			System.out.println("Curr sXX: " + sXX + " Curr sXY " + sXY);
+		}
+
+		// Edge case to prevent division by zero on 0/0
+		if (sXX == 0) sXX = 1;
+		System.out.println("sXX: " + sXX + " sXY: " + sXY);
+
+		// Calculate the linear coefficients
+		double B = sXY/sXX;
+		double A = yTot - B*xTot;
+
+		leastSquaresRegression = (x,y) -> {
+			double returnNum;
+			double priceScore = 0.0;
+			for (Restaurant currRestaurant: x.getMatches(y))
+				priceScore = currRestaurant.getPriceScore();
+			System.out.println("A: " + A + " priceScore: " + priceScore + " B: " + B);
+			returnNum = Math.max(A * priceScore + B, 1.0);
+			return Math.min(returnNum, 5.0);
+		};
+
+		return leastSquaresRegression;
+	}
+
+	/**
+	 * Searches the userAll database for a match to reqUser
+	 *
+	 * @param reqUser the userID of the search target object
+	 *
+	 * @return by-reference User object if it exists, and null if it can't be found
+	 */
+	private User searchUser(String reqUser) {
+		for (User currUser : userAll) {
+			if (currUser.getUserId().equals(reqUser))
+				return currUser;
+		}
 		return null;
+	}
+
+	/**
+	 * Searches the restaurantAll database for a match to reqRestaurant
+	 *
+	 * @param reqRestaurant the userID of the search target object
+	 *
+	 * @return by-reference Restaurant object if it exists, and null if it can't be found
+	 */
+	private Restaurant searchRestaurant(String reqRestaurant) {
+		for (Restaurant currRestaurant : restaurantAll) {
+			if (currRestaurant.getBusinessId().equals(reqRestaurant))
+				return currRestaurant;
+		}
+		return null;
+	}
+
+	public void addUser(User newUser) {
+		if (!userAll.contains(newUser)) {
+			userAll.add(newUser);
+		}
 	}
 }
