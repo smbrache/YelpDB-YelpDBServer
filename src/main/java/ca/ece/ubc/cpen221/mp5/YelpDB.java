@@ -483,12 +483,21 @@ public class YelpDB implements MP5Db {
 	// }
 
 	public String kMeansClusters_json(int k) {
-		// TODO: implement this
 		
 		List<Set<Restaurant>> kMeansClusters = this.kMeansClustering(k);
-		String kMeansClusterString = kMeansClusters.toString();
+		String kMeansClustersJSON = "[";
+		String rString = "";
+		int clusterNumber = 1;
+		for(Set<Restaurant> cluster : kMeansClusters) {
+			for(Restaurant r : cluster) {
+				rString += "{\"x\": " + r.getLatitude() + ", \"y\": " + r.getLongitude() + ", \"name\": \"" + r.getName() + "\", \"cluster\": " + clusterNumber + ", \"weight\": 1.0}, ";
+			}
+			clusterNumber++;
+		}
+		rString = rString.substring(0, rString.length() - 2);
+		kMeansClustersJSON = rString + "]";
 		
-		return null;
+		return kMeansClustersJSON;
 	}
 
 	public List<Set<Restaurant>> kMeansClustering(int k) {

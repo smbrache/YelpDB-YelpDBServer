@@ -37,18 +37,20 @@ public class YelpDBTest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	
+	// First part of kMeans test, test that kMeansClustering() clusters Restaurants correctly and 
+	// returns a properly structured List<Set<Restaurants>> 
 		List<Set<Restaurant>> kMClusters = db.kMeansClustering(10);
-		String kMClusterString = kMClusters.toString();
 
 		List<double[]> centroidList = new ArrayList<double[]>();
 		double[] centroidCoords = new double[2];
+		int entryNum = 1;
 		
 		//for each centroid-cluster pair
 		for (Map.Entry<double[], Set<Restaurant>> clusterMapEntry : db.centroidClusterMap.entrySet()) {
 			
-			//print centroid coordinates and restaurants in the cluster
-			System.out.println("centroid coordinates: " + "Lat: " + clusterMapEntry.getKey()[0] + " Long: " + clusterMapEntry.getKey()[1]);
-			System.out.println("cluster: " + clusterMapEntry.getValue().toString());
+			//print restaurants in the cluster
+			System.out.println("cluster " + entryNum + ": " + clusterMapEntry.getValue().toString());
 			System.out.println();
 
 			//put the centroid in centroidList
@@ -82,29 +84,59 @@ public class YelpDBTest {
 				
 			}//end for all restaurants
 			
+			entryNum++;
 		}//end for all map entries
-
+		
+	// Second part of kMeans test, test that kMeansClusters_json() returns a correct and properly
+	// structured String by analyzing console output
+		String kMeans_json = db.kMeansClusters_json(10);
+		System.out.println(kMeans_json);
 	}
 	
-	// Restaurant test
+	// Make sure passing YelpDB null objects results in thrown IOException
 	@Test
 	public void test02() {
+		try {
+			db = new YelpDB(null, null, null);
+			fail("Did not throw exception");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		try {
+			db = new YelpDB("data/restaurants.json", null, null);
+			fail("Did not throw exception");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		try {
+			db = new YelpDB("data/restaurants.json", "data/reviews.json", null);
+			fail("Did not throw exception");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	// Restaurant constructor and equals test
+	@Test
+	public void test03() {
 		Restaurant r1 = new Restaurant(true, "www.ubc.ca", 1.337, new ArrayList<String>(Arrays.asList("Hood1", "Hood2")), "bizID", "name", new ArrayList<String>(Arrays.asList("cat1", "cat2")), "BC", "type", 5.0, "vancouver", "address", 5, "www.photoURL.com", new ArrayList<String>(Arrays.asList("UBC", "UVic", "SFU")), 1.337, 4);
 		Restaurant r2 = new Restaurant(r1.isOpen(), r1.getUrl(), r1.getLongitude(), r1.getNeighborhoods(), r1.getBusinessId(), r1.getName(), r1.getCategories(), r1.getState(), r1.getType(), r1.getStarScore(), r1.getCity(), r1.getFullAddress(), r1.getReviewCount(), r1.getPhotoURL(), r1.getSchools(), r1.getLatitude(),r1.getPriceScore());
 		assertTrue(r1.equals(r2));
 	}
 	
-	// Review test
+	// Review constructor and equals test
 	@Test
-	public void test03() {
+	public void test04() {
 		Review r1 = new Review("type", "bizID", new int[] {1, 2, 3}, "reviewID", "text", 5, "userID", "date");
 		Review r2 = new Review(r1.getType(), r1.getBusinessId(), r1.getVotes(), r1.getReviewId(), r1.getText(),r1.getStars() , r1.getUserId(), r1.getDate());
 		assertTrue(r1.equals(r2));
 	}
 	
-	// User test
+	// User constructor and equals test
 	@Test
-	public void test04() {
+	public void test05() {
 		User u1 = new User("url", new int[] {1, 2, 3}, 5, "type", "userID", "name", 4.20);
 		User u2 = new User(u1.getUrl(), u1.getVotes(), u1.getReviewCount(), u1.getType(), u1.getUserId(), u1.getName(), u1.getAverageStars());
 		assertTrue(u1.equals(u2));
