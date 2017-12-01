@@ -65,10 +65,8 @@ public class YelpDB implements MP5Db {
 	 * 
 	 * AF:
 	 */
-	Map<double[], Set<Restaurant>> centroidClusterMap;
-	
-	//FOR TESTING
-	Restaurant firstRestaurant;
+	//public for testing
+	public Map<double[], Set<Restaurant>> centroidClusterMap;
 	
 	public YelpDB() {
 		// TODO: test constructor
@@ -127,9 +125,6 @@ public class YelpDB implements MP5Db {
 			restCoords[0] = r.getLatitude();
 			restCoords[1] = r.getLongitude();
 			this.restCoordMap.put(r, Arrays.copyOf(restCoords, restCoords.length));
-			System.out.println("restaurant put into restCoordMap: " + r.toString());
-			System.out.println("Latitude: " + this.restCoordMap.get(r)[0] + " Longitude: " + this.restCoordMap.get(r)[1]);
-			System.out.println("first Restaurant map entry coordinates: Latitude: " + this.restCoordMap.get(firstRestaurant)[0] + " Longitude: " + this.restCoordMap.get(firstRestaurant)[1]);
 		}
 		
 		parseReviewJSON(reviewsJSON);
@@ -292,21 +287,11 @@ public class YelpDB implements MP5Db {
 
 		Restaurant newRestaurant = new Restaurant(isOpen, url, longitude, neighborhoods, businessID, name, categories,
 				state, type, starScore, city, fullAddress, reviewCount, photoURL, schools, latitude, priceScore);
-
-		//FOR TESTING
-		double[] restCoords = new double[2];
-		if(this.restaurantAll.isEmpty()) {
-			this.firstRestaurant = newRestaurant;
-			restCoords[0] = firstRestaurant.getLatitude();
-			restCoords[1] = firstRestaurant.getLongitude();
-			this.restCoordMap.put(firstRestaurant, restCoords);
-		}
 		
 		// Do we need to verify how contains works?/Override hashCode or equals methods?
 		// TODO: Implement a reliable equals method - Connor
 		if (!this.restaurantAll.contains(newRestaurant)) {
 			this.restaurantAll.add(newRestaurant);
-			System.out.println(newRestaurant.toString());
 		}
 
 	}
@@ -522,8 +507,6 @@ public class YelpDB implements MP5Db {
 		for(int i = 0; i < k; i++) {
 			if (i < allRestaurants.size()) {
 				r = allRestaurants.get(i);
-				System.out.println("restaurant chosen as centroid: " + r.toString());
-				System.out.println("Latitude: " + this.restCoordMap.get(r)[0] + " Longitude: " + this.restCoordMap.get(r)[1]);
 				centroidCoords = this.restCoordMap.get(r);
 				centroidList.add(centroidCoords);
 			}
@@ -535,10 +518,7 @@ public class YelpDB implements MP5Db {
 		do {
 			prevCentroidList = centroidList;
 			this.group(centroidList);
-			System.out.println("Number of centroids after group(): " + centroidList.size());
-			
 			centroidList = this.recalculateCentroids(centroidList);
-			System.out.println("Number of centroids after recalculateCentroids(): " + centroidList.size());
 			
 			//Does this comparison work?
 			if(prevCentroidList.equals(centroidList)) {
@@ -572,7 +552,6 @@ public class YelpDB implements MP5Db {
 		double avgLong = 0;
 		double totLat = 0;
 		double totLong = 0;
-		System.out.println("Number of map entries in centroidClusterMap (recalculateCentroids()): " + centroidClusterMap.entrySet().size());
 
 		for(Map.Entry<double[], Set<Restaurant>> centroidClusterEntry : centroidClusterMap.entrySet()) {
 			Set<Restaurant> restSet = centroidClusterEntry.getValue();
@@ -595,14 +574,11 @@ public class YelpDB implements MP5Db {
 	 */
 	private void group(List<double[]> centroidList){
 		
-		System.out.println("Number of clusters (group()): " + centroidList.size());
 		int iterations = 0;
 		for(double[] centroid : centroidList) {
 			centroidClusterMap.put(centroid, new HashSet<Restaurant>());
 			iterations++;
 		}
-		System.out.println("number of map entries put: " + iterations);
-		System.out.println("Number of map entries in centroidClusterMap (group()): " + centroidClusterMap.entrySet().size());
 		
 		double[] closestCentroid = null;
 		for(Restaurant rest : this.restaurantAll) {
@@ -629,7 +605,8 @@ public class YelpDB implements MP5Db {
 	 *            the cartesian coordinates of the centroid
 	 * @return the distance between the restaurant and the centroid
 	 */
-	private static double Distance(double[] restaurantCoords, double[] centroid) {
+	//public for testing
+	public static double Distance(double[] restaurantCoords, double[] centroid) {
 		double distance;
 		double xDist = Math.abs(centroid[0] - restaurantCoords[0]);
 		double yDist = Math.abs(centroid[1] - restaurantCoords[1]);
