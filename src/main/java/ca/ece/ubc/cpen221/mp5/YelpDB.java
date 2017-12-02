@@ -496,7 +496,7 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 	public List<Set<Restaurant>> kMeansClustering(int k) {
 
 		List<Set<Restaurant>> kMeansClusters = new ArrayList<Set<Restaurant>>();
-		Set<double[]> centroidSet = new HashSet<double[]>();
+		List<double[]> centroidList = new ArrayList<double[]>();
 
 		// double[] centroidCoords: centroidCoords[0] is x-coord (latitude)
 		// centroidCoords[1] is y-coord (longitude)
@@ -510,26 +510,26 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 			if (i < allRestaurants.size()) {
 				r = allRestaurants.get(i);
 				centroidCoords = this.restCoordMap.get(r);
-				centroidSet.add(centroidCoords);
+				centroidList.add(centroidCoords);
 			}
 		}
 
-		Set<double[]> prevCentroidSet;
+		List<double[]> prevCentroidList;
 		boolean centroidsChanged = true;
 
 		do {
 			// keep track of the last set of centroids
-			prevCentroidSet = centroidSet;
+			prevCentroidList = centroidList;
 
 			// group restaurants around centroids
-			this.group(centroidSet);
+			this.group(centroidList);
 
 			// recalculate centroid positions
-			centroidSet = this.recalculateCentroids(centroidSet);
+			centroidList = this.recalculateCentroids(centroidList);
 
 			// if the centroids' positions did not change after recalculation, break out of
 			// the loop
-			if (prevCentroidSet.equals(centroidSet)) {
+			if (prevCentroidList.equals(centroidList)) {
 				centroidsChanged = false;
 			}
 		} while (centroidsChanged);
@@ -550,22 +550,22 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 	}
 
 	/**
-	 * Changes the coordinates of each centroid in centroidSet to be the average
+	 * Changes the coordinates of each centroid in centroidList to be the average
 	 * position of all the restaurants in each centroid's cluster.
 	 * 
-	 * @requires: centroidSet is not null
+	 * @requires: centroidList is not null
 	 * @effects: changes the coordinates of each centroid to be the average position
 	 *           of the restaurants in each centroid's cluster
 	 * 
-	 * @modifies: centroidSet
+	 * @modifies: centroidList
 	 * 
-	 * @param centroidSet
-	 *            the set of centroids to modify
-	 * @return a set of the new centroid coordinates
+	 * @param centroidList
+	 *            the List of centroids to modify
+	 * @return a List of the new centroid coordinates
 	 */
-	private Set<double[]> recalculateCentroids(Set<double[]> centroidSet) {
-		// Empty the set
-		centroidSet.removeAll(centroidSet);
+	private List<double[]> recalculateCentroids(List<double[]> centroidList) {
+		// Empty the List
+		centroidList.removeAll(centroidList);
 
 		// double[] centroidCoords: centroidCoords[0] is x-coord (latitude)
 		// centroidCoords[1] is y-coord (longitude)
@@ -587,25 +587,25 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 			avgLong = totLong / (restSet.size());
 			centroidCoords[0] = avgLat;
 			centroidCoords[1] = avgLong;
-			centroidSet.add(centroidCoords);
+			centroidList.add(centroidCoords);
 		}
-		return centroidSet;
+		return centroidList;
 	}
 
 	/**
 	 * Put each restaurant in the cluster of the centroid it is closest to.
 	 * 
-	 * @requires: centroidSet is not null
+	 * @requires: centroidList is not null
 	 * @effects: puts each restaurant in the cluster of the centroid closest to it
 	 * 
-	 * @param centroidSet
-	 *            the set of existing centroids
+	 * @param centroidList
+	 *            the List of existing centroids
 	 */
-	private void group(Set<double[]> centroidSet) {
+	private void group(List<double[]> centroidList) {
 
 		// Empty each centroid's cluster
 		int iterations = 0;
-		for (double[] centroid : centroidSet) {
+		for (double[] centroid : centroidList) {
 			centroidClusterMap.put(centroid, new HashSet<Restaurant>());
 			iterations++;
 		}
@@ -615,7 +615,7 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 		double[] closestCentroid = null;
 		for (Restaurant rest : this.restaurantAll) {
 			double minDist = Double.MAX_VALUE;
-			for (double[] centroid : centroidSet) {
+			for (double[] centroid : centroidList) {
 				if (Distance(restCoordMap.get(rest), centroid) < minDist) {
 					minDist = Distance(restCoordMap.get(rest), centroid);
 					closestCentroid = centroid;
