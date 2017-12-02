@@ -45,32 +45,35 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 	Set<User> userAll;
 
 	/**
-	 * //Todo: Write for this? RI:
+	 * RI: restCoordMap is not null, it can contain 0-n entries and no duplicates
 	 * 
-	 * AF:
+	 * AF: 0 <= number of entries is restCoordMap  = number of restaurants in the database <= database capacity
 	 */
 	Map<Restaurant, double[]> restCoordMap;
 
 	/**
-	 * // * //Todo: Write for this? RI:
+	 * RI: centroidClusterMap is not null, can contain 0-n entries and no duplicates
 	 * 
-	 * AF:
+	 * AF: 0 <= number of entries in centroidClusterMap 
 	 */
 	// public for testing
 	public Map<double[], Set<Restaurant>> centroidClusterMap;
 
+	/**
+	 * Initializes an empty YelpDB.
+	 */
 	public YelpDB() {
 		// TODO: test constructor
 		this.restaurantAll = new HashSet<>();
 		this.reviewAll = new HashSet<>();
 		this.userAll = new HashSet<>();
-
+		this.centroidClusterMap = new HashMap<double[], Set<Restaurant>>();
 		this.restCoordMap = new HashMap<Restaurant, double[]>();
 	}
 
 	/**
-	 * Creates a new YelpDB initialized with data from three .JSON files. //todo:
-	 * something about the restcoordmap centroid cluster map
+	 * Creates a new YelpDB initialized with data from three .JSON files. 
+	 * //TODO: write something about the restcoordmap centroidClusterMap
 	 * 
 	 * @requires restaurantsJSON, reviewsJSON, usersJSON are not null, have valid
 	 *           paths, and are in correct format
