@@ -66,7 +66,6 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 		this.restaurantAll = new HashSet<>();
 		this.reviewAll = new HashSet<>();
 		this.userAll = new HashSet<>();
-		this.centroidClusterMap = new HashMap<double[], Set<Restaurant>>();
 		this.restCoordMap = new HashMap<Restaurant, double[]>();
 	}
 
