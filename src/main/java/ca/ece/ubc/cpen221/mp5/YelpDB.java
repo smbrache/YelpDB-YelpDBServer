@@ -1,7 +1,6 @@
 package ca.ece.ubc.cpen221.mp5;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
@@ -73,7 +72,6 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 
 	/**
 	 * Creates a new YelpDB initialized with data from three .JSON files. 
-	 * //TODO: write something about the restcoordmap centroidClusterMap
 	 * 
 	 * @requires restaurantsJSON, reviewsJSON, usersJSON are not null, have valid
 	 *           paths, and are in correct format
@@ -126,7 +124,6 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 	 * @throws IOException
 	 *             if file is null, is not a .json file, or has invalid path
 	 */
-
 	private void parseRestaurantJSON(String restaurantsJSON) throws IOException {
 		// TODO: implement Restaurant JSON parser Sam
 
@@ -764,8 +761,12 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 	}
 
 	/**
+	 * Adds a user to userAll if user doesn't already exist.
 	 * 
-	 * @param newUser
+	 * @requires: newUser is not null
+	 * @effects: adds newUser to userAll if newUser is not already in userAll
+	 * 
+	 * @param newUser the user to add.
 	 */
 	public void addUser(User newUser) {
 		if (!userAll.contains(newUser)) {
