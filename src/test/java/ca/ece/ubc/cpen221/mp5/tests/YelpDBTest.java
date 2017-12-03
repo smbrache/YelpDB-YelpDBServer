@@ -90,10 +90,9 @@ public class YelpDBTest {
 			entryNum++;
 		}//end for all map entries
 		
-	// Second part of kMeans test, test that kMeansClusters_json() returns a correct and properly
+	// Test that kMeansClusters_json() returns a correct and properly
 	// structured String by analyzing console output
-		String kMeans_json = db.kMeansClusters_json(10);
-		System.out.println(kMeans_json);
+
 	}
 	
 	// Make sure passing YelpDB null objects results in thrown IOException
@@ -170,5 +169,17 @@ public class YelpDBTest {
 		// Testing getMatches on an empty DB
 		YelpDB emptyDB = new YelpDB();
 		assertEquals(0, emptyDB.getMatches("10").size());
+	}
+	
+	@Test 
+	public void test09() {
+		try {
+			db = new YelpDB("data/restaurants.json", "data/reviews.json", "data/users.json");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String kMeans_json = db.kMeansClusters_json(10);
+		System.out.println(kMeans_json);
 	}
 }
