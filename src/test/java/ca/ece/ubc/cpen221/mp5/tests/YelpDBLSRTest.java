@@ -7,7 +7,7 @@ import ca.ece.ubc.cpen221.mp5.YelpDB;
 
 import static junit.framework.TestCase.assertEquals;
 
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -15,10 +15,10 @@ import java.util.function.ToDoubleBiFunction;
 
 public class YelpDBLSRTest {
 
-    private YelpDB yDB;
+    private static YelpDB yDB;
 
-    @Before
-    public void setUp() throws IOException {
+    @BeforeClass
+    public static void setUp() throws IOException {
         try {
             yDB = new YelpDB("data/restaurants.json", "data/reviews.json", "data/users.json");
         }
@@ -33,7 +33,7 @@ public class YelpDBLSRTest {
 
         // Chris M. has 1 review with a price-score: 1, and assigned-score: 4
         // sXX = 0.0 (set to 1.0), sXY = 0 | A = 4, B = 0
-        // Linear Function: Y = 4X
+        // Linear Function: Y = 4
         ToDoubleBiFunction<MP5Db<Restaurant>, String> testFcn = yDB.getPredictorFunction("_NH7Cpq3qZkByP5xR4gXog");
 
         // Provided Restaurant Price Score: 1
@@ -41,8 +41,8 @@ public class YelpDBLSRTest {
         assertEquals(4.0, testFcn.applyAsDouble(yDB, "gclB3ED6uk6viWlolSb_uA"));
 
         // Provided Restaurant Price Score: 2
-        // Expected Output: 8 (Clamped to 5)
-        assertEquals(5.0, testFcn.applyAsDouble(yDB, "9N684D-RFrQC0V4K0XvdxQ"));
+        // Expected Output: 4
+        assertEquals(4.0, testFcn.applyAsDouble(yDB, "9N684D-RFrQC0V4K0XvdxQ"));
     }
 
     @Test
@@ -51,10 +51,10 @@ public class YelpDBLSRTest {
 
         // Erin C. has 2 reviews with price-scores: 3, 2, and assigned-scores: 2, 1
         // sXX = 0.5, sXY = 0.5 | A = -1.0, B = 1
-        // Linear Function Y = -X + 1
+        // Linear Function Y = -1 + X
         // Provided Restaurant Price Score: 3
-        // Expected Output: -2 (Clamped to 1)
-        assertEquals(1.0, yDB.getPredictorFunction("QScfKdcxsa7t5qfE0Ev0Cw").applyAsDouble(yDB, "h_we4E3zofRTf4G0JTEF0A"));
+        // Expected Output: 2
+        assertEquals(2.0, yDB.getPredictorFunction("QScfKdcxsa7t5qfE0Ev0Cw").applyAsDouble(yDB, "h_we4E3zofRTf4G0JTEF0A"));
     }
 
     @Test
@@ -63,11 +63,11 @@ public class YelpDBLSRTest {
 
         // Charles L. has 25 reviews
         // sXX = 6.56, sXY = -3.28 | A = 4, B = -0.5
-        // Linear Function Y = 4X - 0.5
+        // Linear Function Y = 4 - 0.5X
         // Provided Restaurant Price Score: 2
-        // Expected Output: 7.5 (Clamped to 5)
+        // Expected Output: 3
 
-        assertEquals(5.0, yDB.getPredictorFunction("Vw7Zi0EXqHmhru78zyFxaQ").applyAsDouble(yDB, "gOp_w9qmLq6B8YRypTPp8g"));
+        assertEquals(3.0, yDB.getPredictorFunction("Vw7Zi0EXqHmhru78zyFxaQ").applyAsDouble(yDB, "gOp_w9qmLq6B8YRypTPp8g"));
     }
 
     @Test
@@ -76,10 +76,10 @@ public class YelpDBLSRTest {
 
         // Brian S. has 10 reviews
         // sXX = 2.90, sXY = -0.79 | A = 2.6207 B = 0.2759
-        // Linear Function Y = 2.6207X + 0.2759
+        // Linear Function Y = 2.6207 + 0.2759X
         // Provided Restaurant Price Score: 2
-        // Expected Output: 5.517 (Clamped to 5)
-        assertEquals(5.0, yDB.getPredictorFunction("3eNXSh82_4UThqhJBwkrbA").applyAsDouble(yDB, "PkSoDMwb3y3-lRsqaKqSGw"));
+        // Expected Output: 3.1725
+        assertEquals(3.1724137931034484, yDB.getPredictorFunction("3eNXSh82_4UThqhJBwkrbA").applyAsDouble(yDB, "PkSoDMwb3y3-lRsqaKqSGw"));
     }
 
     @Test

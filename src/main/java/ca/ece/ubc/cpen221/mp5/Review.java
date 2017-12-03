@@ -93,7 +93,7 @@ public class Review {
      *
      * @param like true for like, false for dislike
      */
-    public void voteHelpful(boolean like) {
+    public void voteUseful(boolean like) {
         if (like)
             votes[1]++;
         else

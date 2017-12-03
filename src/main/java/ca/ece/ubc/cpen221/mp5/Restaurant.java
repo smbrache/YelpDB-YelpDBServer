@@ -124,7 +124,6 @@ public class Restaurant {
     public void addReview(Review inputReview) {
         // inputReview must not be null
         restaurantReviews.add(inputReview);
-        reviewCount++;
     }
 
     /**
@@ -220,7 +219,7 @@ public class Restaurant {
      * @return case-sensitive String of school
      */
     public List<String> getSchools() {
-        return schools;
+        return new ArrayList<>(schools);
     }
 
     /**
