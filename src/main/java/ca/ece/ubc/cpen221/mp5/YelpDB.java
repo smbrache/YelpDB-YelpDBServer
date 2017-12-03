@@ -62,7 +62,6 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 	 * Initializes an empty YelpDB.
 	 */
 	public YelpDB() {
-		// TODO: test constructor
 		this.restaurantAll = new HashSet<>();
 		this.reviewAll = new HashSet<>();
 		this.userAll = new HashSet<>();
@@ -89,7 +88,6 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 	 *             not .json files
 	 */
 	public YelpDB(String restaurantsJSON, String reviewsJSON, String usersJSON) throws IOException {
-		// TODO: test constructor
 		this.restaurantAll = new HashSet<>();
 		this.reviewAll = new HashSet<>();
 		this.userAll = new HashSet<>();
@@ -124,7 +122,6 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 	 *             if file is null, is not a .json file, or has invalid path
 	 */
 	private void parseRestaurantJSON(String restaurantsJSON) throws IOException {
-		// TODO: implement Restaurant JSON parser Sam
 
 		if (restaurantsJSON == null || !(restaurantsJSON.substring(restaurantsJSON.length() - 5)).equals(".json")) {
 			throw new IOException();
@@ -188,7 +185,6 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 	 *             if file is null, is not a .json file, or has invalid path
 	 */
 	private void parseUserJSON(String usersJSON) throws IOException {
-		// TODO: implement User JSON parser Sam
 
 		if (usersJSON == null || !(usersJSON.substring(usersJSON.length() - 5)).equals(".json")) {
 			throw new IOException();
@@ -216,8 +212,6 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 	 */
 	private void addRestaurant(JsonObject addedRestaurant) {
 		// addedRestaurant must not be null and not already present in the database
-		// TODO: add Restaurant object data Connor
-		// TODO: add restaurants to relevant maps Sam
 
 		String type = addedRestaurant.getString("type");
 		boolean isOpen = addedRestaurant.getBoolean("open");
@@ -273,9 +267,6 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 	 */
 	private void addReview(JsonObject addedReview) {
 		// addedReview must not be null and not already be present in the database
-		// TODO: add Review object data Connor
-		// TODO: add review to correct restaurant's review list and user's review list
-		// Sam
 
 		String type = addedReview.getString("type");
 		String businessID = addedReview.getString("business_id");
@@ -297,11 +288,17 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 
 		for (User currUser : userAll) {
 			if (newReview.getUserId().equals(currUser.getUserId())) {
-				currUser.addReview(newReview, true);
+				currUser.addReview(newReview);
 				break;
 			}
 		}
 
+		for (Restaurant currRestaurant : restaurantAll) {
+			if (newReview.getBusinessId().equals(currRestaurant.getBusinessId())) {
+				currRestaurant.addReview(newReview);
+				break;
+			}
+		}
 	}
 
 	/**
@@ -314,7 +311,6 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 	 */
 	private void addUser(JsonObject addedUser) {
 		// addedUser must not be null and not already be present in the database
-		// TODO: add User object data Connor
 
 		String url = addedUser.getString("url");
 		int reviewCount = addedUser.getInt("review_count");
@@ -346,11 +342,12 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 	 * @return a List<Restaurant> containing all restaurants that are within the
 	 *         requested category, or an empty list if there are none
 	 */
+	/*
 	public List<Restaurant> filterResByCat(String inputCategory) {
-		// TODO: implement this Connor
-		// Status: On hold till Structured Queries
+		// To be implemented later
 		return null;
 	}
+	*/
 
 	/**
 	 * Returns a list of Restaurant based on a provided restaurant location.
@@ -364,11 +361,12 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 	 * @return a List<Restaurant> containing all restaurants that are within the
 	 *         requested location, or an empty list if there are none
 	 */
+	/*
 	public List<Restaurant> filterResByLoc(String inputLocation) {
-		// TODO: implement this Connor
-		// Status: On hold till Structured Queries
+		// Status: To be implemented later
 		return null;
 	}
+	*/
 
 	/**
 	 * Returns a list of Restaurant that are in the requested inputRating score.
@@ -382,11 +380,12 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 	 * @return a List<Restaurant> containing all restaurants that score the
 	 *         requested rating or an empty list if there are none
 	 */
+	/*
 	public List<Restaurant> filterResByRat(int inputRating) {
-		// TODO: implement this Connor
-		// Status: On hold till Structured Queries
+		// To be implemented later
 		return null;
 	}
+	*/
 
 	/**
 	 * Returns a list of Restaurant that are in the requested inputPrice score.
@@ -400,11 +399,12 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 	 * @return a List<Restaurant> containing all restaurants that have a price score
 	 *         of the requested rating or an empty list if there are none
 	 */
+	/*
 	public List<Restaurant> filterResByPri(int inputPrice) {
-		// TODO: implement this Connor
-		// Status: On hold till Structured Queries
+		// To be implemented later
 		return null;
 	}
+	*/
 
 	/**
 	 * getMatches finds and returns a single-set Restaurant that matches the ID of
@@ -673,8 +673,6 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 		double xTot = 0.0;
 		double yTot = 0.0;
 
-		System.out.println("Num Reviews " + reqUser.getUserReview().size());
-
 		for (Review currReview : reqUser.getUserReview()) {
 			// Retrieve the restaurant price score
 			allX.add(searchRestaurant(currReview.getBusinessId()).getPriceScore());
@@ -682,9 +680,7 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 			// Retrieve the user rating score
 			allY.add(currReview.getStars());
 			yTot += allY.get(allY.size() - 1);
-			System.out.println("xCurr: " + allX.get(allX.size() - 1) + " yTot: " + currReview.getStars());
 		}
-		System.out.println("xTot: " + xTot + " yTot: " + yTot);
 		// No reviews for the userID
 		if (xTot == 0)
 			return leastSquaresRegression;
@@ -693,21 +689,18 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 		xTot = xTot / allX.size();
 		yTot = yTot / allY.size();
 
-		System.out.println("xTot: " + xTot + " yTot: " + yTot);
-
 		// Calculate the sums of squares sXX, sXY
 		double sXX = 0.0;
 		double sXY = 0.0;
 		for (int i = 0; i < allX.size(); i++) {
 			sXX += Math.pow((allX.get(i) - xTot), 2.0);
 			sXY += (allX.get(i) - xTot) * (allY.get(i) - yTot);
-			System.out.println("Curr sXX: " + sXX + " Curr sXY " + sXY);
 		}
 
 		// Edge case to prevent division by zero on 0/0
 		if (sXX == 0)
 			sXX = 1;
-		System.out.println("sXX: " + sXX + " sXY: " + sXY);
+		//System.out.println("sXX: " + sXX + " sXY: " + sXY);
 
 		// Calculate the linear coefficients
 		double B = sXY / sXX;
@@ -718,8 +711,8 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 			double priceScore = 0.0;
 			for (Restaurant currRestaurant : x.getMatches(y))
 				priceScore = currRestaurant.getPriceScore();
-			System.out.println("A: " + A + " priceScore: " + priceScore + " B: " + B);
-			returnNum = Math.max(A * priceScore + B, 1.0);
+			//System.out.println("A: " + A + " priceScore: " + priceScore + " B: " + B);
+			returnNum = Math.max(A + B * priceScore, 1.0);
 			return Math.min(returnNum, 5.0);
 		};
 
@@ -729,12 +722,11 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 	/**
 	 * Searches the userAll database for a match to reqUser
 	 *
-	 * @param reqUser
-	 *            the userID of the search target object
+	 * @param reqUser the userID of the search target object
 	 *
 	 * @return by-reference User object if it exists, and null if it can't be found
 	 */
-	private User searchUser(String reqUser) {
+	public User searchUser(String reqUser) {
 		for (User currUser : userAll) {
 			if (currUser.getUserId().equals(reqUser))
 				return currUser;
@@ -745,13 +737,12 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 	/**
 	 * Searches the restaurantAll database for a match to reqRestaurant
 	 *
-	 * @param reqRestaurant
-	 *            the userID of the search target object
+	 * @param reqRestaurant the userID of the search target object
 	 *
 	 * @return by-reference Restaurant object if it exists, and null if it can't be
-	 *         found
+	 * found
 	 */
-	private Restaurant searchRestaurant(String reqRestaurant) {
+	public Restaurant searchRestaurant(String reqRestaurant) {
 		for (Restaurant currRestaurant : restaurantAll) {
 			if (currRestaurant.getBusinessId().equals(reqRestaurant))
 				return currRestaurant;
@@ -760,9 +751,26 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 	}
 
 	/**
+	 * Searches the reviewAll database for a match to reqReview
+	 *
+	 * @param reqReview the userID of the search target object
+	 *
+	 * @return by-reference Review object if it exists, and null if it can't be
+	 * found
+	 */
+	public Review searchReview(String reqReview) {
+		for (Review currReview : reviewAll) {
+			if (currReview.getReviewId().equals(reqReview))
+				return currReview;
+		}
+		return null;
+	}
+
+	/**
 	 * Adds a user to userAll if user doesn't already exist.
 	 * 
 	 * @requires: newUser is not null
+	 *
 	 * @effects: adds newUser to userAll if newUser is not already in userAll
 	 * 
 	 * @param newUser the user to add.

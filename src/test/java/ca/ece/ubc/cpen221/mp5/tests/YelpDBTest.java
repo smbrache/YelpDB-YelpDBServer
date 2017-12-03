@@ -53,6 +53,7 @@ public class YelpDBTest {
 			System.out.println("cluster " + entryNum + ": " + clusterMapEntry.getValue().toString());
 			System.out.println();
 
+
 			//put the centroid in centroidList
 			centroidCoords[0] = clusterMapEntry.getKey()[0];
 			centroidCoords[1] = clusterMapEntry.getKey()[1];
@@ -77,8 +78,10 @@ public class YelpDBTest {
 				
 				//if the closest centroid to the restaurant is not the centroid of its cluster, fail the test
 				if(!(closestCentroid[0] == clusterMapEntry.getKey()[0]) && !(closestCentroid[1] == clusterMapEntry.getKey()[1])) {
+
 					System.out.println("closest centroid to " + r.getName() + " is " + closestCentroid[0] + " " + closestCentroid[1]);
 					System.out.println("the centroid in its cluster is " + clusterMapEntry.getKey()[0] + " " + clusterMapEntry.getKey()[1]);
+
 					fail("closest centroid is not in this restaurant's cluster");
 				}
 				
@@ -140,5 +143,32 @@ public class YelpDBTest {
 		User u1 = new User("url", new int[] {1, 2, 3}, 5, "type", "userID", "name", 4.20);
 		User u2 = new User(u1.getUrl(), u1.getVotes(), u1.getReviewCount(), u1.getType(), u1.getUserId(), u1.getName(), u1.getAverageStars());
 		assertTrue(u1.equals(u2));
+	}
+
+	@Test
+	public void test06() {
+		// Testing null properties of YelpDB search functions
+		assertEquals(null, db.searchRestaurant("ABA"));
+		assertEquals(null, db.searchReview("BAB"));
+		assertEquals(null, db.searchUser("BBB"));
+	}
+
+	@Test
+	public void test07() {
+		// Testing the addition of duplicates to a database
+		YelpDB dupDatabase = new YelpDB();
+		User dupUser = new User("a", new int[]{1, 1, 1}, 1, "user", "a", "A.", 1);
+
+		// Add once - successful
+		dupDatabase.addUser(dupUser);
+		// Add twice - unsuccessful
+		dupDatabase.addUser(dupUser);
+	}
+
+	@Test
+	public void test08() {
+		// Testing getMatches on an empty DB
+		YelpDB emptyDB = new YelpDB();
+		assertEquals(0, emptyDB.getMatches("10").size());
 	}
 }

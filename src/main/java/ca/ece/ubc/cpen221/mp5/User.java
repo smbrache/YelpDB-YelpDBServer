@@ -34,13 +34,13 @@ public class User {
     /**
      * Initializes a User object
      *
-     * @param url
-     * @param votes
-     * @param reviewCount
-     * @param type
-     * @param userId
-     * @param name
-     * @param averageStars
+     * @param url String to web url of user web page
+     * @param votes int array depicting quantity of cool, useful, and funny votes
+     * @param reviewCount int number of reviews posted by the user
+     * @param type String representation of member type (e.g. user, moderator)
+     * @param userId String user ID
+     * @param name String representation of user display name
+     * @param averageStars double value of collective average rating in stars (1-5)
      */
     public User(String url, int[] votes, int reviewCount, String type, String userId, String name, double averageStars) {
         // Initialize immutable and preset data
@@ -56,10 +56,8 @@ public class User {
         userReviews = new ArrayList<>();
     }
 
-    public void addReview(Review inputReview, boolean initCollection) {
+    public void addReview(Review inputReview) {
         userReviews.add(inputReview);
-        if (!initCollection)
-            reviewCount++;
     }
 
     /**
@@ -79,7 +77,7 @@ public class User {
      *
      * @param like true for like, false for dislike
      */
-    public void voteHelpful(boolean like) {
+    public void voteUseful(boolean like) {
         if (like)
             votes[1]++;
         else
