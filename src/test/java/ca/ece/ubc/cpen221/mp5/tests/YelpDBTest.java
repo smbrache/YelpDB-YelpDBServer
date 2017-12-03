@@ -50,8 +50,8 @@ public class YelpDBTest {
 		for (Map.Entry<double[], Set<Restaurant>> clusterMapEntry : db.centroidClusterMap.entrySet()) {
 			
 			//print restaurants in the cluster
-			System.out.println("cluster " + entryNum + ": " + clusterMapEntry.getValue().toString());
-			System.out.println();
+			//System.out.println("cluster " + entryNum + ": " + clusterMapEntry.getValue().toString());
+			//System.out.println();
 
 			//put the centroid in centroidList
 			centroidCoords[0] = clusterMapEntry.getKey()[0];
@@ -97,14 +97,14 @@ public class YelpDBTest {
 	@Test
 	public void test02() {
 		try {
-			db = new YelpDB(null, null, null);
+			db = new YelpDB(null, "data/reviews.json", "data/users.json");
 			fail("Did not throw exception");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
 		try {
-			db = new YelpDB("data/restaurants.json", null, null);
+			db = new YelpDB("data/restaurants.json", null, "data/users.json");
 			fail("Did not throw exception");
 		} catch (IOException e) {
 			e.printStackTrace();

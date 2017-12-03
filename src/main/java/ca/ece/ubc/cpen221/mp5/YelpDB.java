@@ -516,6 +516,7 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 
 		List<double[]> prevCentroidList;
 		boolean centroidsChanged = true;
+		boolean centroidsAreClosest = false;
 
 		do {
 			// keep track of the last set of centroids
@@ -527,12 +528,13 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 			// recalculate centroid positions
 			centroidList = this.recalculateCentroids(centroidList);
 
-			// if the centroids' positions did not change after recalculation, break out of
-			// the loop
+			// if the centroids' positions did not change after recalculation, set centroidsChanged to false
 			if (prevCentroidList.equals(centroidList)) {
 				centroidsChanged = false;
+				centroidsAreClosest = this.centroidsAreClosest(centroidList);
 			}
-		} while (centroidsChanged);
+			
+		} while (centroidsChanged && !centroidsAreClosest);
 
 		for (Map.Entry<double[], Set<Restaurant>> centroidClusterMapEntry : this.centroidClusterMap.entrySet()) {
 			// If the current clutser is empty, run kMeansClustering again
@@ -544,11 +546,53 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 			} else {
 				kMeansClusters.add(centroidClusterMapEntry.getValue());
 			}
+			
 		}
 
 		return kMeansClusters;
 	}
 
+	/**
+	 * Checks if the closest centroid to each restaurant is the centroid in its cluster.
+	 * 
+	 * @requires: centroidList is not null
+	 * 
+	 * @param centroidList the list of centroids to use to find which centroid is closest to each restaurant
+	 * @return true if the closest centroid to each restaurant is the restaurant in its cluster
+	 */
+	public boolean centroidsAreClosest( List<double[]> centroidList){
+		
+		for (Map.Entry<double[], Set<Restaurant>> centroidClusterMapEntry : this.centroidClusterMap.entrySet()) {
+			
+			//for each restaurant in the cluster
+			Set<Restaurant> restSet = centroidClusterMapEntry.getValue();
+			for (Restaurant restaurant : restSet) {
+				
+				//find the closest centroid to the restaurant
+				double[] closestCentroid = null;
+				double minDist = Double.MAX_VALUE;
+				double[] restCoords = new double[2];
+				restCoords[0] = restaurant.getLatitude();
+				restCoords[1] = restaurant.getLongitude();
+				for (double[] centroid : centroidList) {
+					if (YelpDB.Distance(restCoords, centroid) < minDist) {
+						minDist = YelpDB.Distance(restCoords, centroid);
+						closestCentroid = centroid;
+					}
+				}
+				
+				// if the closest centroid to a restaurant is not the centroid in its cluster return false
+				if(!closestCentroid.equals(centroidClusterMapEntry.getKey())) {
+					return false;
+				}
+
+			}
+			
+		}
+		
+		return true;
+	}
+	
 	/**
 	 * Changes the coordinates of each centroid in centroidList to be the average
 	 * position of all the restaurants in each centroid's cluster.
