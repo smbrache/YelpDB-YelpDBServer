@@ -90,8 +90,6 @@ public class YelpDBTest {
 			entryNum++;
 		}//end for all map entries
 		
-	// Test that kMeansClusters_json() returns a correct and properly
-	// structured String by analyzing console output
 
 	}
 	
@@ -171,6 +169,8 @@ public class YelpDBTest {
 		assertEquals(0, emptyDB.getMatches("10").size());
 	}
 	
+	// Test that kMeansClusters_json() returns a correct and properly
+	// structured String by analyzing console output
 	@Test 
 	public void test09() {
 		try {
