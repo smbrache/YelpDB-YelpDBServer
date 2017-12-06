@@ -648,10 +648,8 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 	private void group(List<double[]> centroidList) {
 
 		// Empty each centroid's cluster
-		int iterations = 0;
 		for (double[] centroid : centroidList) {
 			centroidClusterMap.put(centroid, new HashSet<Restaurant>());
-			iterations++;
 		}
 
 		// Find the closest centroid to each restaurant and put the restaurant in that
@@ -763,55 +761,40 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 		return leastSquaresRegression;
 	}
 
-	/**
-	 * Searches the userAll database for a match to reqUser
-	 *
-	 * @param reqUser the userID of the search target object
-	 *
-	 * @return by-reference User object if it exists, and null if it can't be found
-	 */
-	public User searchUser(String reqUser) {
-		for (User currUser : userAll) {
-			if (currUser.getUserId().equals(reqUser))
-				return currUser;
-		}
-		return null;
-	}
+
 
 	/**
-	 * Searches the restaurantAll database for a match to reqRestaurant
+	 * Adds a Restaurant to restaurantAll if the Restaurant doesn't already exist.
+	 * 
+	 * @requires: newRestaurant is not null
 	 *
-	 * @param reqRestaurant the userID of the search target object
-	 *
-	 * @return by-reference Restaurant object if it exists, and null if it can't be
-	 * found
+	 * @effects: adds newRestaurant to restaurantAll if newRestaurant is not already in restaurantAll
+	 * 
+	 * @param newRestaurant the Restaurant to add.
 	 */
-	public Restaurant searchRestaurant(String reqRestaurant) {
-		for (Restaurant currRestaurant : restaurantAll) {
-			if (currRestaurant.getBusinessId().equals(reqRestaurant))
-				return currRestaurant;
+	public void addRestaurant(Restaurant newRestaurant) {
+		if (!restaurantAll.contains(newRestaurant)) {
+			restaurantAll.add(newRestaurant);
 		}
-		return null;
 	}
-
+	
 	/**
-	 * Searches the reviewAll database for a match to reqReview
+	 * Adds a Review to reviewAll if the Review doesn't already exist.
+	 * 
+	 * @requires: newReview is not null
 	 *
-	 * @param reqReview the userID of the search target object
-	 *
-	 * @return by-reference Review object if it exists, and null if it can't be
-	 * found
+	 * @effects: adds newReview to reviewAll if newReview is not already in reviewAll
+	 * 
+	 * @param newReview the Review to add.
 	 */
-	public Review searchReview(String reqReview) {
-		for (Review currReview : reviewAll) {
-			if (currReview.getReviewId().equals(reqReview))
-				return currReview;
+	public void addReview(Review newReview) {
+		if (!reviewAll.contains(newReview)) {
+			reviewAll.add(newReview);
 		}
-		return null;
 	}
-
+	
 	/**
-	 * Adds a user to userAll if user doesn't already exist.
+	 * Adds a user to userAll if the user doesn't already exist.
 	 * 
 	 * @requires: newUser is not null
 	 *
@@ -823,5 +806,97 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 		if (!userAll.contains(newUser)) {
 			userAll.add(newUser);
 		}
+	}
+	
+	/**
+	 * Searches the userAll database for a match to reqUser
+	 *
+	 * @param reqUserID the userID of the search target object
+	 *
+	 * @return by-reference User object if it exists, and null if it can't be found
+	 */
+	public User searchUser(String reqUserID) {
+		for (User currUser : userAll) {
+			if (currUser.getUserId().equals(reqUserID))
+				return currUser;
+		}
+		return null;
+	}
+
+	/**
+	 * Searches the restaurantAll database for a match to reqRestaurant
+	 *
+	 * @param reqBusinessID the businessID of the search target object
+	 *
+	 * @return by-reference Restaurant object if it exists, and null if it can't be
+	 * found
+	 */
+	public Restaurant searchRestaurant(String reqBusinessID) {
+		for (Restaurant currRestaurant : restaurantAll) {
+			if (currRestaurant.getBusinessId().equals(reqBusinessID))
+				return currRestaurant;
+		}
+		return null;
+	}
+
+	/**
+	 * Searches the reviewAll database for a match to reqReview
+	 *
+	 * @param reqReviewID the reviewID of the search target object
+	 *
+	 * @return by-reference Review object if it exists, and null if it can't be
+	 * found
+	 */
+	public Review searchReview(String reqReviewID) {
+		for (Review currReview : reviewAll) {
+			if (currReview.getReviewId().equals(reqReviewID))
+				return currReview;
+		}
+		return null;
+	}
+	
+	/**
+	 * Gets the info of a Restaurant in the YelpDB, and returns it in a JSON format String. 
+	 * 
+	 * @param reqBusinessID the businessID of the Restuarant whose info to return
+	 * @return the String in JSON format of the Restaurant's info
+	 */
+	public String getRestaurantJSON(String reqBusinessID) {
+		Restaurant reqRest = this.searchRestaurant(reqBusinessID);
+		
+		//put String into JSON format
+		String reqRestJSON = "";
+		
+		return null;
+	}
+
+	/**
+	 * Gets the info of a User in the YelpDB, and returns it in a JSON format String.
+	 * 
+	 * @param reqUserID the userID of the User whose info to return
+	 * @return the String in JSON format of the User's info
+	 */
+	public String getUserJSON(String reqUserID) {
+		User reqUser = this.searchUser(reqUserID);
+		
+		//put String into JSON format
+		String reqUserJSON = "";
+		
+		return null;
+	}
+
+	/**
+	 * Gets the info of a Review in the YelpDB, and returns it in a JSON format String.
+	 * 
+	 * @param reqReviewID the reviewID of the Review whose info to return
+	 * @return the String in JSON format of the Review's info 
+	 */
+	public String getReviewJSON(String reqReviewID) {
+		 Review reqReview = this.searchReview(reqReviewID);
+		 
+		//put String into JSON format
+		 String reqReviewJSON = "";
+		 
+		return null;
 	}
 }
