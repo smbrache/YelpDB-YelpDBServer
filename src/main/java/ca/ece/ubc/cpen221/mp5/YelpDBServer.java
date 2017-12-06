@@ -66,10 +66,9 @@ public class YelpDBServer {
 		// and that buffer it so that we can read a line at a time
 		BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-		// similarly, wrap character=>bytestream converter around the
-		// socket output stream, and wrap a PrintWriter around that so
-		// that we have more convenient ways to write Java primitive
-		// types to it.
+		// wrap character=>bytestream converter around the
+		// socket output stream, and wrap a PrintWriter around that to have more
+		// convenient ways to write Java primitive types to it.
 		PrintWriter out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
 
 		try {
@@ -105,6 +104,7 @@ public class YelpDBServer {
 						JsonReader parseRestaurant = Json.createReader(new StringReader(info));
 						JsonObject restaurantInfo = parseRestaurant.readObject();
 
+						// Convert JsonObject restaurantInfo to JSON format String
 						String addRestoJSON = db.serverAddRestaurant(restaurantInfo);
 						out.print(addRestoJSON);
 
@@ -113,27 +113,27 @@ public class YelpDBServer {
 						JsonReader parseReview = Json.createReader(new StringReader(info));
 						JsonObject reviewInfo = parseReview.readObject();
 
+						// Convert JsonObject reviewInfo to JSON format String
 						String addReviewJSON = db.serverAddReview(reviewInfo);
 						out.print(addReviewJSON);
-						
+
 					} else if (command.equals("ADDUSER")) {
 						// parse info into JsonObject userInfo
 						JsonReader parseUser = Json.createReader(new StringReader(info));
 						JsonObject userInfo = parseUser.readObject();
 
+						// Convert JsonObject userInfo to JSON format String
 						String addUserJSON = db.serverAddUser(userInfo);
 						out.print(addUserJSON);
 					}
 
-				// TODO: still need to modify catch block below, taken from fibonacci server	
+					// TODO: still need to modify catch block below, taken from fibonacci server
 				} catch (NumberFormatException e) {
 					// complain about ill-formatted request
 					System.err.println("reply: err");
 					out.print("err\n");
 				}
-				// important! our PrintWriter is auto-flushing, but if it were
-				// not:
-				// out.flush();
+
 			}
 		} finally {
 			out.close();
