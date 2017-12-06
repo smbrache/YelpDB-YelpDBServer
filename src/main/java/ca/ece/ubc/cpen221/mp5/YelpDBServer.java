@@ -100,8 +100,10 @@ public class YelpDBServer {
 						out.print(reviewJSON);
 
 					} else if (command.equals("ADDRESTAURANT")) {
+						String restInfo = info;
+						
 						// parse info into JsonObject restaurantInfo
-						JsonReader parseRestaurant = Json.createReader(new StringReader(info));
+						JsonReader parseRestaurant = Json.createReader(new StringReader(restInfo));
 						JsonObject restaurantInfo = parseRestaurant.readObject();
 
 						// Convert JsonObject restaurantInfo to JSON format String
@@ -109,8 +111,10 @@ public class YelpDBServer {
 						out.print(addRestoJSON);
 
 					} else if (command.equals("ADDREVIEW")) {
+						String revInfo = info;
+						
 						// parse info into JsonObject reviewInfo
-						JsonReader parseReview = Json.createReader(new StringReader(info));
+						JsonReader parseReview = Json.createReader(new StringReader(revInfo));
 						JsonObject reviewInfo = parseReview.readObject();
 
 						// Convert JsonObject reviewInfo to JSON format String
@@ -118,8 +122,10 @@ public class YelpDBServer {
 						out.print(addReviewJSON);
 
 					} else if (command.equals("ADDUSER")) {
+						String usrInfo = info;
+						
 						// parse info into JsonObject userInfo
-						JsonReader parseUser = Json.createReader(new StringReader(info));
+						JsonReader parseUser = Json.createReader(new StringReader(usrInfo));
 						JsonObject userInfo = parseUser.readObject();
 
 						// Convert JsonObject userInfo to JSON format String
