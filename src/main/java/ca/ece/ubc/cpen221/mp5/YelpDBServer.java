@@ -5,12 +5,16 @@ import java.math.BigInteger;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
+
 public class YelpDBServer {
 
 	public static final int YELPDB_PORT = 4949;
 
 	private ServerSocket serverSocket;
-	
+
 	private YelpDB db;
 
 	// Rep invariant: serverSocket != null
@@ -53,7 +57,7 @@ public class YelpDBServer {
 			handler.start();
 		}
 	}
-	
+
 	private void handle(Socket socket) throws IOException {
 		System.err.println("client connected");
 
@@ -69,40 +73,59 @@ public class YelpDBServer {
 		PrintWriter out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
 
 		try {
-			// each request is a single line: a command followed by info which are separated by a single space
+			// each request is a single line: a command followed by info which are separated
+			// by a single space
 			for (String line = in.readLine(); line != null; line = in.readLine()) {
 				System.err.println("request: " + line);
-				
+
 				// break up request into command and info
 				String command = line.substring(0, line.indexOf(' ')).trim();
 				String info = line.substring(line.indexOf(' '), line.length()).trim();
-				
+
 				// what type of exception should we throw?
 				try {
 					// figure out what the command is
-					if(command.equals("GETRESTAURANT")) {
+					if (command.equals("GETRESTAURANT")) {
 						String businessID = info;
 						String restaurantJSON = db.getRestaurantJSON(businessID);
-						
-					}else if(command.equals("GETUSER")) {
+						out.println(restaurantJSON);
+
+					} else if (command.equals("GETUSER")) {
 						String userID = info;
 						String userJSON = db.getUserJSON(userID);
-						
-					}else if(command.equals("GETREVIEW")) {
+						out.println(userJSON);
+
+					} else if (command.equals("GETREVIEW")) {
 						String reviewID = info;
 						String reviewJSON = db.getReviewJSON(reviewID);
+						out.print(reviewJSON);
+
+					} else if (command.equals("ADDRESTAURANT")) {
+						// parse info into JsonObject restaurantInfo
+						JsonReader parseRestaurant = Json.createReader(new StringReader(info));
+						JsonObject restaurantInfo = parseRestaurant.readObject();
+
+						String addRestoJSON = db.serverAddRestaurant(restaurantInfo);
+						out.print(addRestoJSON);
+
+					} else if (command.equals("ADDREVIEW")) {
+						// parse info into JsonObject reviewInfo
+						JsonReader parseReview = Json.createReader(new StringReader(info));
+						JsonObject reviewInfo = parseReview.readObject();
+
+						String addReviewJSON = db.serverAddReview(reviewInfo);
+						out.print(addReviewJSON);
 						
-					}else if(command.equals("ADDRESTAURANT")) {
-						String restaurantInfo = info;
-						
-					}else if(command.equals("ADDREVIEW")) {
-						String reviewInfo = info;
-						
-					}else if(command.equals("ADDUSER")) {
-						String userInfo = info;
-						
+					} else if (command.equals("ADDUSER")) {
+						// parse info into JsonObject userInfo
+						JsonReader parseUser = Json.createReader(new StringReader(info));
+						JsonObject userInfo = parseUser.readObject();
+
+						String addUserJSON = db.serverAddUser(userInfo);
+						out.print(addUserJSON);
 					}
 
+				// TODO: still need to modify catch block below, taken from fibonacci server	
 				} catch (NumberFormatException e) {
 					// complain about ill-formatted request
 					System.err.println("reply: err");

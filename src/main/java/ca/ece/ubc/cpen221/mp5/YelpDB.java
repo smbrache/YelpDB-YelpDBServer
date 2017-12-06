@@ -46,14 +46,15 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 	/**
 	 * RI: restCoordMap is not null, it can contain 0-n entries and no duplicates
 	 * 
-	 * AF: 0 <= number of entries is restCoordMap  = number of restaurants in the database <= database capacity
+	 * AF: 0 <= number of entries is restCoordMap = number of restaurants in the
+	 * database <= database capacity
 	 */
 	Map<Restaurant, double[]> restCoordMap;
 
 	/**
 	 * RI: centroidClusterMap is not null, can contain 0-n entries and no duplicates
 	 * 
-	 * AF: 0 <= number of entries in centroidClusterMap 
+	 * AF: 0 <= number of entries in centroidClusterMap
 	 */
 	// public for testing
 	public Map<double[], Set<Restaurant>> centroidClusterMap;
@@ -69,7 +70,7 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 	}
 
 	/**
-	 * Creates a new YelpDB initialized with data from three .JSON files. 
+	 * Creates a new YelpDB initialized with data from three .JSON files.
 	 * 
 	 * @requires restaurantsJSON, reviewsJSON, usersJSON are not null, have valid
 	 *           paths, and are in correct format
@@ -134,11 +135,9 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 			StringReader sr = new StringReader(line);
 			JsonReader parseRestaurant = Json.createReader(sr);
 			JsonObject restaurant = parseRestaurant.readObject();
-			addRestaurant(restaurant);// remove
-			// return restaurant;
+			addRestaurant(restaurant);
 		}
 		restaurantReader.close();
-		// return null;
 	}
 
 	/**
@@ -153,7 +152,6 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 	 *             if file is null, is not a .json file, or has invalid path
 	 */
 	private void parseReviewJSON(String reviewsJSON) throws IOException {
-		// TODO: implement Review JSON parser Sam
 
 		if (reviewsJSON == null || !(reviewsJSON.substring(reviewsJSON.length() - 5)).equals(".json")) {
 			throw new IOException();
@@ -166,11 +164,9 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 			StringReader sr = new StringReader(line);
 			JsonReader parseReview = Json.createReader(sr);
 			JsonObject review = parseReview.readObject();
-			addReview(review);// remove
-			// return review;
+			addReview(review);
 		}
 		reviewReader.close();
-		// return null;
 	}
 
 	/**
@@ -197,11 +193,9 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 			StringReader sr = new StringReader(line);
 			JsonReader parseUser = Json.createReader(sr);
 			JsonObject user = parseUser.readObject();
-			addUser(user);// remove
-			// return user;
+			addUser(user);
 		}
 		userReader.close();
-		// return null;
 	}
 
 	/**
@@ -343,11 +337,9 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 	 *         requested category, or an empty list if there are none
 	 */
 	/*
-	public List<Restaurant> filterResByCat(String inputCategory) {
-		// To be implemented later
-		return null;
-	}
-	*/
+	 * public List<Restaurant> filterResByCat(String inputCategory) { // To be
+	 * implemented later return null; }
+	 */
 
 	/**
 	 * Returns a list of Restaurant based on a provided restaurant location.
@@ -362,11 +354,9 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 	 *         requested location, or an empty list if there are none
 	 */
 	/*
-	public List<Restaurant> filterResByLoc(String inputLocation) {
-		// Status: To be implemented later
-		return null;
-	}
-	*/
+	 * public List<Restaurant> filterResByLoc(String inputLocation) { // Status: To
+	 * be implemented later return null; }
+	 */
 
 	/**
 	 * Returns a list of Restaurant that are in the requested inputRating score.
@@ -381,11 +371,9 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 	 *         requested rating or an empty list if there are none
 	 */
 	/*
-	public List<Restaurant> filterResByRat(int inputRating) {
-		// To be implemented later
-		return null;
-	}
-	*/
+	 * public List<Restaurant> filterResByRat(int inputRating) { // To be
+	 * implemented later return null; }
+	 */
 
 	/**
 	 * Returns a list of Restaurant that are in the requested inputPrice score.
@@ -400,11 +388,9 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 	 *         of the requested rating or an empty list if there are none
 	 */
 	/*
-	public List<Restaurant> filterResByPri(int inputPrice) {
-		// To be implemented later
-		return null;
-	}
-	*/
+	 * public List<Restaurant> filterResByPri(int inputPrice) { // To be implemented
+	 * later return null; }
+	 */
 
 	/**
 	 * getMatches finds and returns a single-set Restaurant that matches the ID of
@@ -528,12 +514,13 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 			// recalculate centroid positions
 			centroidList = this.recalculateCentroids(centroidList);
 
-			// if the centroids' positions did not change after recalculation, set centroidsChanged to false
+			// if the centroids' positions did not change after recalculation, set
+			// centroidsChanged to false
 			if (prevCentroidList.equals(centroidList)) {
 				centroidsChanged = false;
 				centroidsAreClosest = this.centroidsAreClosest(centroidList);
 			}
-			
+
 		} while (centroidsChanged && !centroidsAreClosest);
 
 		for (Map.Entry<double[], Set<Restaurant>> centroidClusterMapEntry : this.centroidClusterMap.entrySet()) {
@@ -546,29 +533,33 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 			} else {
 				kMeansClusters.add(centroidClusterMapEntry.getValue());
 			}
-			
+
 		}
 
 		return kMeansClusters;
 	}
 
 	/**
-	 * Checks if the closest centroid to each restaurant is the centroid in its cluster.
+	 * Checks if the closest centroid to each restaurant is the centroid in its
+	 * cluster.
 	 * 
 	 * @requires: centroidList is not null
 	 * 
-	 * @param centroidList the list of centroids to use to find which centroid is closest to each restaurant
-	 * @return true if the closest centroid to each restaurant is the restaurant in its cluster
+	 * @param centroidList
+	 *            the list of centroids to use to find which centroid is closest to
+	 *            each restaurant
+	 * @return true if the closest centroid to each restaurant is the restaurant in
+	 *         its cluster
 	 */
-	public boolean centroidsAreClosest( List<double[]> centroidList){
-		
+	public boolean centroidsAreClosest(List<double[]> centroidList) {
+
 		for (Map.Entry<double[], Set<Restaurant>> centroidClusterMapEntry : this.centroidClusterMap.entrySet()) {
-			
-			//for each restaurant in the cluster
+
+			// for each restaurant in the cluster
 			Set<Restaurant> restSet = centroidClusterMapEntry.getValue();
 			for (Restaurant restaurant : restSet) {
-				
-				//find the closest centroid to the restaurant
+
+				// find the closest centroid to the restaurant
 				double[] closestCentroid = null;
 				double minDist = Double.MAX_VALUE;
 				double[] restCoords = new double[2];
@@ -580,19 +571,20 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 						closestCentroid = centroid;
 					}
 				}
-				
-				// if the closest centroid to a restaurant is not the centroid in its cluster return false
-				if(!closestCentroid.equals(centroidClusterMapEntry.getKey())) {
+
+				// if the closest centroid to a restaurant is not the centroid in its cluster
+				// return false
+				if (!closestCentroid.equals(centroidClusterMapEntry.getKey())) {
 					return false;
 				}
 
 			}
-			
+
 		}
-		
+
 		return true;
 	}
-	
+
 	/**
 	 * Changes the coordinates of each centroid in centroidList to be the average
 	 * position of all the restaurants in each centroid's cluster.
@@ -742,7 +734,7 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 		// Edge case to prevent division by zero on 0/0
 		if (sXX == 0)
 			sXX = 1;
-		//System.out.println("sXX: " + sXX + " sXY: " + sXY);
+		// System.out.println("sXX: " + sXX + " sXY: " + sXY);
 
 		// Calculate the linear coefficients
 		double B = sXY / sXX;
@@ -753,7 +745,7 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 			double priceScore = 0.0;
 			for (Restaurant currRestaurant : x.getMatches(y))
 				priceScore = currRestaurant.getPriceScore();
-			//System.out.println("A: " + A + " priceScore: " + priceScore + " B: " + B);
+			// System.out.println("A: " + A + " priceScore: " + priceScore + " B: " + B);
 			returnNum = Math.max(A + B * priceScore, 1.0);
 			return Math.min(returnNum, 5.0);
 		};
@@ -761,38 +753,40 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 		return leastSquaresRegression;
 	}
 
-
-
 	/**
 	 * Adds a Restaurant to restaurantAll if the Restaurant doesn't already exist.
 	 * 
 	 * @requires: newRestaurant is not null
 	 *
-	 * @effects: adds newRestaurant to restaurantAll if newRestaurant is not already in restaurantAll
+	 * @effects: adds newRestaurant to restaurantAll if newRestaurant is not already
+	 *           in restaurantAll
 	 * 
-	 * @param newRestaurant the Restaurant to add.
+	 * @param newRestaurant
+	 *            the Restaurant to add.
 	 */
 	public void addRestaurant(Restaurant newRestaurant) {
 		if (!restaurantAll.contains(newRestaurant)) {
 			restaurantAll.add(newRestaurant);
 		}
 	}
-	
+
 	/**
 	 * Adds a Review to reviewAll if the Review doesn't already exist.
 	 * 
 	 * @requires: newReview is not null
 	 *
-	 * @effects: adds newReview to reviewAll if newReview is not already in reviewAll
+	 * @effects: adds newReview to reviewAll if newReview is not already in
+	 *           reviewAll
 	 * 
-	 * @param newReview the Review to add.
+	 * @param newReview
+	 *            the Review to add.
 	 */
 	public void addReview(Review newReview) {
 		if (!reviewAll.contains(newReview)) {
 			reviewAll.add(newReview);
 		}
 	}
-	
+
 	/**
 	 * Adds a user to userAll if the user doesn't already exist.
 	 * 
@@ -800,18 +794,20 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 	 *
 	 * @effects: adds newUser to userAll if newUser is not already in userAll
 	 * 
-	 * @param newUser the user to add.
+	 * @param newUser
+	 *            the user to add.
 	 */
 	public void addUser(User newUser) {
 		if (!userAll.contains(newUser)) {
 			userAll.add(newUser);
 		}
 	}
-	
+
 	/**
 	 * Searches the userAll database for a match to reqUser
 	 *
-	 * @param reqUserID the userID of the search target object
+	 * @param reqUserID
+	 *            the userID of the search target object
 	 *
 	 * @return by-reference User object if it exists, and null if it can't be found
 	 */
@@ -826,10 +822,11 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 	/**
 	 * Searches the restaurantAll database for a match to reqRestaurant
 	 *
-	 * @param reqBusinessID the businessID of the search target object
+	 * @param reqBusinessID
+	 *            the businessID of the search target object
 	 *
 	 * @return by-reference Restaurant object if it exists, and null if it can't be
-	 * found
+	 *         found
 	 */
 	public Restaurant searchRestaurant(String reqBusinessID) {
 		for (Restaurant currRestaurant : restaurantAll) {
@@ -842,10 +839,11 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 	/**
 	 * Searches the reviewAll database for a match to reqReview
 	 *
-	 * @param reqReviewID the reviewID of the search target object
+	 * @param reqReviewID
+	 *            the reviewID of the search target object
 	 *
 	 * @return by-reference Review object if it exists, and null if it can't be
-	 * found
+	 *         found
 	 */
 	public Review searchReview(String reqReviewID) {
 		for (Review currReview : reviewAll) {
@@ -854,49 +852,150 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 		}
 		return null;
 	}
-	
+
 	/**
-	 * Gets the info of a Restaurant in the YelpDB, and returns it in a JSON format String. 
+	 * Gets the info of a Restaurant in the YelpDB, and returns it in a JSON format
+	 * String.
 	 * 
-	 * @param reqBusinessID the businessID of the Restuarant whose info to return
+	 * @param reqBusinessID
+	 *            the businessID of the Restuarant whose info to return
 	 * @return the String in JSON format of the Restaurant's info
 	 */
 	public String getRestaurantJSON(String reqBusinessID) {
+		// TODO: Error handling
 		Restaurant reqRest = this.searchRestaurant(reqBusinessID);
-		
-		//put String into JSON format
-		String reqRestJSON = "";
-		
-		return null;
+
+		// begin putting the reqRestJSON String into JSON format
+		String reqRestJSON = "{\"open\": true, \"url\": \"" + reqRest.getUrl() + "\", \"longitude\": "
+				+ reqRest.getLongitude() + ", \"neighborhoods\": ";
+
+		// format the neighborhoods list
+		String neighborhoods = "[";
+		for (String currHood : reqRest.getNeighborhoods()) {
+			neighborhoods += "\"" + currHood + "\", ";
+		}
+		neighborhoods = neighborhoods.substring(0, neighborhoods.length() - 2);
+		neighborhoods = neighborhoods + "]";
+
+		// resume formatting the reqRestJSON String into JSON format
+		reqRestJSON += neighborhoods + ", \"business_id\": \"" + reqRest.getBusinessId() + "\", \"name\": \""
+				+ reqRest.getName() + "\", \"categories\": ";
+
+		// format the categories list
+		String categories = "[";
+		for (String currCat : reqRest.getCategories()) {
+			categories += "\"" + currCat + "\", ";
+		}
+		categories = categories.substring(0, categories.length() - 2);
+		categories = categories + "]";
+
+		// resume formatting the reqRestJSON String
+		reqRestJSON += categories + ", \"state\": \"" + reqRest.getState() + "\", \"type\": \"" + reqRest.getType()
+				+ "\", \"stars\": " + reqRest.getStarScore() + ", \"city\": \"" + reqRest.getCity()
+				+ "\", \"full_address\": \"" + reqRest.getFullAddress() + "\", \"review_count\": "
+				+ reqRest.getReviewCount() + ", \"photo_url\": \"" + reqRest.getPhotoURL() + "\", \"schools\": ";
+
+		// format the schools list
+		String schools = "[";
+		for (String currSchool : reqRest.getSchools()) {
+			schools += "\"" + currSchool + "\", ";
+		}
+		schools = schools.substring(0, schools.length() - 2);
+		schools = schools + "]";
+
+		// resume formatting the reqRestJSON String
+		reqRestJSON += schools + ", \"latitude\": " + reqRest.getLatitude() + ", \"price\": " + reqRest.getPriceScore()
+				+ "}";
+
+		return reqRestJSON;
 	}
 
 	/**
-	 * Gets the info of a User in the YelpDB, and returns it in a JSON format String.
+	 * Gets the info of a User in the YelpDB, and returns it in a JSON format
+	 * String.
 	 * 
-	 * @param reqUserID the userID of the User whose info to return
+	 * @param reqUserID
+	 *            the userID of the User whose info to return
 	 * @return the String in JSON format of the User's info
 	 */
 	public String getUserJSON(String reqUserID) {
+		// TODO: Error handling
 		User reqUser = this.searchUser(reqUserID);
-		
-		//put String into JSON format
-		String reqUserJSON = "";
-		
+
+		// put the reqUserJSON String into JSON format
+		String reqUserJSON = "\"url\": \"" + reqUser.getUrl() + "\", \"votes\": {\"funny\": " + reqUser.getVotes()[2]
+				+ ", \"useful\": " + reqUser.getVotes()[1] + ", \"cool\": " + reqUser.getVotes()[0]
+				+ "}, \"review_count\": " + reqUser.getReviewCount() + ", \"type\": \"" + reqUser.getType()
+				+ "\", \"user_id\": \"" + reqUser.getUserId() + "\", \"name\": \"" + reqUser.getName()
+				+ "\", \"average_stars\": " + reqUser.getAverageStars() + "}";
+
+		return reqUserJSON;
+	}
+
+	/**
+	 * Gets the info of a Review in the YelpDB, and returns it in a JSON format
+	 * String.
+	 * 
+	 * @param reqReviewID
+	 *            the reviewID of the Review whose info to return
+	 * @return the String in JSON format of the Review's info
+	 */
+	public String getReviewJSON(String reqReviewID) {
+		// TODO: Error handling
+		Review reqReview = this.searchReview(reqReviewID);
+
+		// put String into JSON format
+		String reqReviewJSON = "{\"type\": \"" + reqReview.getType() + "\", \"business_id\": \""
+				+ reqReview.getBusinessId() + "\", \"votes\": {\"cool\": " + reqReview.getVotes()[0] + ", \"useful\": "
+				+ reqReview.getVotes()[1] + ", \"funny\": " + reqReview.getVotes()[2] + "}, \"review_id\": \""
+				+ reqReview.getReviewId() + "\", \"text\": \"" + reqReview.getText() + "\", \"stars\": "
+				+ reqReview.getStars() + ", \"user_id\": \"" + reqReview.getUserId() + "\", \"date\": \""
+				+ reqReview.getDate() + "\"}";
+
+		return reqReviewJSON;
+	}
+
+	/**
+	 * Adds a restaurant to the database via a YelpDBServer request, and returns a
+	 * String in JSON format containing the info of the created Restaurant.
+	 * 
+	 * @param restaurantInfo
+	 *            the JsonObject containing information about the Restaurant that
+	 *            exists without the database
+	 * @return a String in JSON format containing all database info about the added
+	 *         Restaurant
+	 */
+	public String serverAddRestaurant(JsonObject restaurantInfo) {
+		// TODO: Implement
 		return null;
 	}
 
 	/**
-	 * Gets the info of a Review in the YelpDB, and returns it in a JSON format String.
+	 * Adds a Review to the database via a YelpDBServer request, and returns a
+	 * String in JSON format containing the info of the created Review.
 	 * 
-	 * @param reqReviewID the reviewID of the Review whose info to return
-	 * @return the String in JSON format of the Review's info 
+	 * @param reviewInfo
+	 *            the JsonObject containing information about the Review that is not
+	 *            decided by the database
+	 * @return a String in JSON format containing all database info about the added
+	 *         Review
 	 */
-	public String getReviewJSON(String reqReviewID) {
-		 Review reqReview = this.searchReview(reqReviewID);
-		 
-		//put String into JSON format
-		 String reqReviewJSON = "";
-		 
+	public String serverAddReview(JsonObject reviewInfo) {
+		// TODO: Implement
+		return null;
+	}
+
+	/**
+	 * Adds a User to the database via a YelpDBServer request, and returns a String
+	 * in JSON format containing the info of the created User.
+	 * 
+	 * @param userInfo
+	 *            the JsonObject containing the name of the User
+	 * @return a String in JSON format containing all database info about the added
+	 *         User
+	 */
+	public String serverAddUser(JsonObject userInfo) {
+		// TODO: Implement
 		return null;
 	}
 }

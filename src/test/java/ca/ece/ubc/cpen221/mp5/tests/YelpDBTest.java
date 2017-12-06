@@ -37,33 +37,34 @@ public class YelpDBTest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	
-	// First part of kMeans test, test that kMeansClustering() clusters Restaurants correctly and 
-	// returns a properly structured List<Set<Restaurants>> 
+
+		// First part of kMeans test, test that kMeansClustering() clusters Restaurants
+		// correctly and
+		// returns a properly structured List<Set<Restaurants>>
 		List<Set<Restaurant>> kMClusters = db.kMeansClustering(10);
 
 		List<double[]> centroidList = new ArrayList<double[]>();
 		double[] centroidCoords = new double[2];
 		int entryNum = 1;
-		
-		//for each centroid-cluster pair
+
+		// for each centroid-cluster pair
 		for (Map.Entry<double[], Set<Restaurant>> clusterMapEntry : db.centroidClusterMap.entrySet()) {
-			
-			//print restaurants in the cluster
-			//System.out.println("cluster " + entryNum + ": " + clusterMapEntry.getValue().toString());
-			//System.out.println();
 
+			// print restaurants in the cluster
+			// System.out.println("cluster " + entryNum + ": " +
+			// clusterMapEntry.getValue().toString());
+			// System.out.println();
 
-			//put the centroid in centroidList
+			// put the centroid in centroidList
 			centroidCoords[0] = clusterMapEntry.getKey()[0];
 			centroidCoords[1] = clusterMapEntry.getKey()[1];
 			centroidList.add(Arrays.copyOf(centroidCoords, centroidCoords.length));
 
-			//for each restaurant in the cluster
+			// for each restaurant in the cluster
 			Set<Restaurant> restSet = clusterMapEntry.getValue();
 			for (Restaurant r : restSet) {
-				
-				//find the closest centroid to the restaurant
+
+				// find the closest centroid to the restaurant
 				double[] closestCentroid = null;
 				double minDist = Double.MAX_VALUE;
 				double[] restCoords = new double[2];
@@ -75,24 +76,27 @@ public class YelpDBTest {
 						closestCentroid = centroid;
 					}
 				}
-				
-				//if the closest centroid to the restaurant is not the centroid of its cluster, fail the test
-				if(!(closestCentroid[0] == clusterMapEntry.getKey()[0]) && !(closestCentroid[1] == clusterMapEntry.getKey()[1])) {
 
-					System.out.println("closest centroid to " + r.getName() + " is " + closestCentroid[0] + " " + closestCentroid[1]);
-					System.out.println("the centroid in its cluster is " + clusterMapEntry.getKey()[0] + " " + clusterMapEntry.getKey()[1]);
+				// if the closest centroid to the restaurant is not the centroid of its cluster,
+				// fail the test
+				if (!(closestCentroid[0] == clusterMapEntry.getKey()[0])
+						&& !(closestCentroid[1] == clusterMapEntry.getKey()[1])) {
+
+					System.out.println("closest centroid to " + r.getName() + " is " + closestCentroid[0] + " "
+							+ closestCentroid[1]);
+					System.out.println("the centroid in its cluster is " + clusterMapEntry.getKey()[0] + " "
+							+ clusterMapEntry.getKey()[1]);
 
 					fail("closest centroid is not in this restaurant's cluster");
 				}
-				
-			}//end for all restaurants
-			
+
+			} // end for all restaurants
+
 			entryNum++;
-		}//end for all map entries
-		
+		} // end for all map entries
 
 	}
-	
+
 	// Make sure passing YelpDB null objects results in thrown IOException
 	@Test
 	public void test02() {
@@ -102,14 +106,14 @@ public class YelpDBTest {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		try {
 			db = new YelpDB("data/restaurants.json", null, "data/users.json");
 			fail("Did not throw exception");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		try {
 			db = new YelpDB("data/restaurants.json", "data/reviews.json", null);
 			fail("Did not throw exception");
@@ -117,28 +121,42 @@ public class YelpDBTest {
 			e.printStackTrace();
 		}
 	}
-	
+
 	// Restaurant constructor and equals test
 	@Test
 	public void test03() {
-		Restaurant r1 = new Restaurant(true, "www.ubc.ca", 1.337, new ArrayList<String>(Arrays.asList("Hood1", "Hood2")), "bizID", "name", new ArrayList<String>(Arrays.asList("cat1", "cat2")), "BC", "type", 5.0, "vancouver", "address", 5, "www.photoURL.com", new ArrayList<String>(Arrays.asList("UBC", "UVic", "SFU")), 1.337, 4);
-		Restaurant r2 = new Restaurant(r1.isOpen(), r1.getUrl(), r1.getLongitude(), r1.getNeighborhoods(), r1.getBusinessId(), r1.getName(), r1.getCategories(), r1.getState(), r1.getType(), r1.getStarScore(), r1.getCity(), r1.getFullAddress(), r1.getReviewCount(), r1.getPhotoURL(), r1.getSchools(), r1.getLatitude(),r1.getPriceScore());
+		Restaurant r1 = new Restaurant(true, "www.ubc.ca", 1.337,
+				new ArrayList<String>(Arrays.asList("Hood1", "Hood2")), "bizID", "name",
+				new ArrayList<String>(Arrays.asList("cat1", "cat2")), "BC", "type", 5.0, "vancouver", "address", 5,
+				"www.photoURL.com", new ArrayList<String>(Arrays.asList("UBC", "UVic", "SFU")), 1.337, 4);
+		
+		Restaurant r2 = new Restaurant(r1.isOpen(), r1.getUrl(), r1.getLongitude(), r1.getNeighborhoods(),
+				r1.getBusinessId(), r1.getName(), r1.getCategories(), r1.getState(), r1.getType(), r1.getStarScore(),
+				r1.getCity(), r1.getFullAddress(), r1.getReviewCount(), r1.getPhotoURL(), r1.getSchools(),
+				r1.getLatitude(), r1.getPriceScore());
+		
 		assertTrue(r1.equals(r2));
 	}
-	
+
 	// Review constructor and equals test
 	@Test
 	public void test04() {
-		Review r1 = new Review("type", "bizID", new int[] {1, 2, 3}, "reviewID", "text", 5, "userID", "date");
-		Review r2 = new Review(r1.getType(), r1.getBusinessId(), r1.getVotes(), r1.getReviewId(), r1.getText(),r1.getStars() , r1.getUserId(), r1.getDate());
+		Review r1 = new Review("type", "bizID", new int[] { 1, 2, 3 }, "reviewID", "text", 5, "userID", "date");
+		
+		Review r2 = new Review(r1.getType(), r1.getBusinessId(), r1.getVotes(), r1.getReviewId(), r1.getText(),
+				r1.getStars(), r1.getUserId(), r1.getDate());
+		
 		assertTrue(r1.equals(r2));
 	}
-	
+
 	// User constructor and equals test
 	@Test
 	public void test05() {
-		User u1 = new User("url", new int[] {1, 2, 3}, 5, "type", "userID", "name", 4.20);
-		User u2 = new User(u1.getUrl(), u1.getVotes(), u1.getReviewCount(), u1.getType(), u1.getUserId(), u1.getName(), u1.getAverageStars());
+		User u1 = new User("url", new int[] { 1, 2, 3 }, 5, "type", "userID", "name", 4.20);
+		
+		User u2 = new User(u1.getUrl(), u1.getVotes(), u1.getReviewCount(), u1.getType(), u1.getUserId(), u1.getName(),
+				u1.getAverageStars());
+		
 		assertTrue(u1.equals(u2));
 	}
 
@@ -154,7 +172,7 @@ public class YelpDBTest {
 	public void test07() {
 		// Testing the addition of duplicates to a database
 		YelpDB dupDatabase = new YelpDB();
-		User dupUser = new User("a", new int[]{1, 1, 1}, 1, "user", "a", "A.", 1);
+		User dupUser = new User("a", new int[] { 1, 1, 1 }, 1, "user", "a", "A.", 1);
 
 		// Add once - successful
 		dupDatabase.addUser(dupUser);
@@ -168,10 +186,10 @@ public class YelpDBTest {
 		YelpDB emptyDB = new YelpDB();
 		assertEquals(0, emptyDB.getMatches("10").size());
 	}
-	
+
 	// Test that kMeansClusters_json() returns a correct and properly
 	// structured String by analyzing console output
-	@Test 
+	@Test
 	public void test09() {
 		try {
 			db = new YelpDB("data/restaurants.json", "data/reviews.json", "data/users.json");
