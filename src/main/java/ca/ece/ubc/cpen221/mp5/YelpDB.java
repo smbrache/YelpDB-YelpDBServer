@@ -214,7 +214,7 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 		double latitude = addedRestaurant.getJsonNumber("latitude").doubleValue();
 		String state = addedRestaurant.getString("state");
 		String city = addedRestaurant.getString("city");
-		String fullAddress = addedRestaurant.getString("full_address");
+		String fullAddress = addedRestaurant.getString("full_address").replace("\n", ", ");
 		String businessID = addedRestaurant.getString("business_id");
 		String name = addedRestaurant.getString("name");
 		double starScore = addedRestaurant.getJsonNumber("stars").doubleValue();
@@ -265,7 +265,7 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 		String type = addedReview.getString("type");
 		String businessID = addedReview.getString("business_id");
 		String reviewID = addedReview.getString("review_id");
-		String text = addedReview.getString("text");
+		String text = addedReview.getString("text").replace("\n", "--newline-");
 		int starScore = addedReview.getInt("stars");
 		String userID = addedReview.getString("user_id");
 		String date = addedReview.getString("date");
@@ -876,7 +876,7 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 	 *            the businessID of the Restuarant whose info to return
 	 * @return the String in JSON format of the Restaurant's info
 	 */
-	public String getRestaurantJSON(String reqBusinessID) {
+	public synchronized String getRestaurantJSON(String reqBusinessID) {
 		// TODO: Error handling
 		Restaurant reqRest = this.searchRestaurant(reqBusinessID);
 		
@@ -925,8 +925,7 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 		schools = schools + "]";
 
 		// resume formatting the reqRestJSON String
-		reqRestJSON += schools + ", \"latitude\": " + reqRest.getLatitude() + ", \"price\": " + reqRest.getPriceScore()
-				+ "}";
+		reqRestJSON += schools + ", \"latitude\": " + reqRest.getLatitude() + ", \"price\": " + reqRest.getPriceScore() + "}";
 
 		return reqRestJSON;
 	}
@@ -939,7 +938,7 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 	 *            the userID of the User whose info to return
 	 * @return the String in JSON format of the User's info
 	 */
-	public String getUserJSON(String reqUserID) {
+	public synchronized String getUserJSON(String reqUserID) {
 		// TODO: Error handling
 		User reqUser = this.searchUser(reqUserID);
 
@@ -970,7 +969,7 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 	 *            the reviewID of the Review whose info to return
 	 * @return the String in JSON format of the Review's info
 	 */
-	public String getReviewJSON(String reqReviewID) {
+	public synchronized String getReviewJSON(String reqReviewID) {
 		// TODO: Error handling
 		Review reqReview = this.searchReview(reqReviewID);
 
@@ -1004,7 +1003,7 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 	 * @return a String in JSON format containing all database info about the added
 	 *         Restaurant
 	 */
-	public String serverAddRestaurant(JsonObject restaurantInfo) {
+	public synchronized String serverAddRestaurant(JsonObject restaurantInfo) {
 		// TODO: Error handling
 		// ____________ must not be null and not already present in the database
 
@@ -1070,7 +1069,7 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 	 * @return a String in JSON format containing all database info about the added
 	 *         Review
 	 */
-	public String serverAddReview(JsonObject reviewInfo) {
+	public synchronized String serverAddReview(JsonObject reviewInfo) {
 		// TODO: Error handling
 		// _________must not be null and not already be present in the database
 
@@ -1131,7 +1130,7 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 	 * @return a String in JSON format containing all database info about the added
 	 *         User
 	 */
-	public String serverAddUser(JsonObject userInfo) {
+	public synchronized String serverAddUser(JsonObject userInfo) {
 		// TODO: Error handling
 		// ________ must not be null and not already be present in the database
 

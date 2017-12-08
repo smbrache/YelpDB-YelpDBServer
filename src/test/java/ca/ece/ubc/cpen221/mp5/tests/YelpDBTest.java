@@ -24,10 +24,6 @@ public class YelpDBTest {
 
 	YelpDB db = new YelpDB();
 
-	@Before
-	public void setUp() {
-	}
-
 	// kMeansClustering test
 	@Test
 	public void test01() {

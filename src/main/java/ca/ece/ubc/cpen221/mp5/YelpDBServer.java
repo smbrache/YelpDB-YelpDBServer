@@ -58,7 +58,7 @@ public class YelpDBServer {
 		}
 	}
 
-	private void handle(Socket socket) throws IOException {
+	private synchronized void handle(Socket socket) throws IOException {
 		System.err.println("client connected");
 
 		// get the socket's input stream, and wrap converters around it
@@ -78,72 +78,80 @@ public class YelpDBServer {
 				System.err.println("request: " + line);
 
 				// break up request into command and info
-				String command = line.substring(0, line.indexOf(' ')).trim();
-				String info = line.substring(line.indexOf(' '), line.length()).trim();
+				final String command = line.substring(0, line.indexOf(' ')).trim();
+				final String info = line.substring(line.indexOf(' '), line.length()).trim();
 
-				// what type of exception should we throw?
-				try {
-					// figure out what the command is
-					if (command.equals("GETRESTAURANT")) {
-						String businessID = info;
-						String restaurantJSON = db.getRestaurantJSON(businessID);
-						out.println(restaurantJSON);
+			// removed try-catch block here, should we have a format exception?
+				// figure out what the command is
+				if (command.equals("GETRESTAURANT")) {
+					String businessID = info;
+					final String restaurantJSON = db.getRestaurantJSON(businessID);
+					out.println(restaurantJSON);
 
-					} else if (command.equals("GETUSER")) {
-						String userID = info;
-						String userJSON = db.getUserJSON(userID);
-						out.println(userJSON);
+				} else if (command.equals("GETUSER")) {
+					String userID = info;
+					final String userJSON = db.getUserJSON(userID);
+					out.println(userJSON);
 
-					} else if (command.equals("GETREVIEW")) {
-						String reviewID = info;
-						String reviewJSON = db.getReviewJSON(reviewID);
-						out.print(reviewJSON);
+				} else if (command.equals("GETREVIEW")) {
+					String reviewID = info;
+					final String reviewJSON = db.getReviewJSON(reviewID);
+					out.println(reviewJSON);
 
-					} else if (command.equals("ADDRESTAURANT")) {
-						String restInfo = info;
-						
-						// parse info into JsonObject restaurantInfo
-						JsonReader parseRestaurant = Json.createReader(new StringReader(restInfo));
-						JsonObject restaurantInfo = parseRestaurant.readObject();
+				} else if (command.equals("ADDRESTAURANT")) {
+					String restInfo = info;
 
-						// Convert JsonObject restaurantInfo to JSON format String
-						String addRestoJSON = db.serverAddRestaurant(restaurantInfo);
-						out.print(addRestoJSON);
+					// parse info into JsonObject restaurantInfo
+					JsonReader parseRestaurant = Json.createReader(new StringReader(restInfo));
+					JsonObject restaurantInfo = parseRestaurant.readObject();
 
-					} else if (command.equals("ADDREVIEW")) {
-						String revInfo = info;
-						
-						// parse info into JsonObject reviewInfo
-						JsonReader parseReview = Json.createReader(new StringReader(revInfo));
-						JsonObject reviewInfo = parseReview.readObject();
+					// Convert JsonObject restaurantInfo to JSON format String
+					final String addRestoJSON = db.serverAddRestaurant(restaurantInfo);
+					out.println(addRestoJSON);
 
-						// Convert JsonObject reviewInfo to JSON format String
-						String addReviewJSON = db.serverAddReview(reviewInfo);
-						out.print(addReviewJSON);
+				} else if (command.equals("ADDREVIEW")) {
+					String revInfo = info;
 
-					} else if (command.equals("ADDUSER")) {
-						String usrInfo = info;
-						
-						// parse info into JsonObject userInfo
-						JsonReader parseUser = Json.createReader(new StringReader(usrInfo));
-						JsonObject userInfo = parseUser.readObject();
+					// parse info into JsonObject reviewInfo
+					JsonReader parseReview = Json.createReader(new StringReader(revInfo));
+					JsonObject reviewInfo = parseReview.readObject();
 
-						// Convert JsonObject userInfo to JSON format String
-						String addUserJSON = db.serverAddUser(userInfo);
-						out.print(addUserJSON);
-					}
+					// Convert JsonObject reviewInfo to JSON format String
+					final String addReviewJSON = db.serverAddReview(reviewInfo);
+					out.println(addReviewJSON);
 
-					// TODO: still need to modify catch block below, taken from fibonacci server
-				} catch (NumberFormatException e) {
-					// complain about ill-formatted request
-					System.err.println("reply: err");
-					out.print("err\n");
+				} else if (command.equals("ADDUSER")) {
+					String usrInfo = info;
+
+					// parse info into JsonObject userInfo
+					JsonReader parseUser = Json.createReader(new StringReader(usrInfo));
+					JsonObject userInfo = parseUser.readObject();
+
+					// Convert JsonObject userInfo to JSON format String
+					final String addUserJSON = db.serverAddUser(userInfo);
+					out.println(addUserJSON);
 				}
 
 			}
 		} finally {
 			out.close();
 			in.close();
+		}
+
+	}
+
+	/**
+	 * Start a YelpDBServer running on the default port.
+	 */
+	public static void main(String[] args) {
+		YelpDB db;
+
+		try {
+			db = new YelpDB("data/restaurants.json", "data/reviews.json", "data/users.json");
+			YelpDBServer server = new YelpDBServer(db, YelpDBServer.YELPDB_PORT);
+			server.serve();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 }
