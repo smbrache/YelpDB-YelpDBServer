@@ -103,7 +103,6 @@ public class YelpDBClient {
             String getUserReply = client.getReply();
             System.out.println("got User JSON: " + getUserReply);
             
-            
             client.close();
         } catch (IOException ioe) {
             ioe.printStackTrace();
