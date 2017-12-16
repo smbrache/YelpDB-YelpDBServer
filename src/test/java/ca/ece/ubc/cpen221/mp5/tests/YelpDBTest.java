@@ -159,9 +159,15 @@ public class YelpDBTest {
 	@Test
 	public void test06() {
 		// Testing null properties of YelpDB search functions
-		assertEquals(null, db.searchRestaurant("ABA"));
-		assertEquals(null, db.searchReview("BAB"));
-		assertEquals(null, db.searchUser("BBB"));
+		assertEquals(new Restaurant(true, "null", 0.0, new ArrayList<String>(), "null", "null", new ArrayList<String>(), "null", "null", 0.0,
+				"null", "null", 0, "null", new ArrayList<String>(), 0.0, 0), db.searchRestaurant("ABA"));
+		
+		int[] nullVotes = new int[3];
+		nullVotes[0] = 0;
+		nullVotes[1] = 0;
+		nullVotes[2] = 0;
+		assertEquals(new Review("null", "null", nullVotes, "null", "null", 0, "null", "null"), db.searchReview("BAB"));
+		assertEquals(new User("null", nullVotes, 0, "null", "null", "null", 0.0), db.searchUser("BBB"));
 	}
 
 	@Test

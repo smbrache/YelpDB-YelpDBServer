@@ -67,7 +67,7 @@ public class ReviewTest {
     @Test
     public void test03() {
         // Testing text and text-edit methods
-        assertEquals("The pizza is terrible, but if you need a place to watch a game or just down some pitchers, this place works.\n\nOh, and the pasta is even worse than the pizza.", reviewTest.getText());
+        assertEquals("The pizza is terrible, but if you need a place to watch a game or just down some pitchers, this place works.--newline---newline-Oh, and the pasta is even worse than the pizza.", reviewTest.getText());
         reviewTest.editText("567");
         assertEquals("567", reviewTest.getText());
     }
