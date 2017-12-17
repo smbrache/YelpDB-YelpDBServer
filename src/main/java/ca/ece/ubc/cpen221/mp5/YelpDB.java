@@ -426,7 +426,7 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 	 * @return the list of Restaurants in the database
 	 */
 	public List<Restaurant> getRestaurantAll() {
-		List<Restaurant> restaurantAllCopy = new ArrayList<Restaurant>();
+		List<Restaurant> restaurantAllCopy = new ArrayList<>();
 		for (Restaurant r : this.restaurantAll) {
 			restaurantAllCopy.add(r);
 		}

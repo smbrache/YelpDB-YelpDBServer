@@ -1,7 +1,6 @@
 package ca.ece.ubc.cpen221.mp5;
 
-// Generated from MP5Db.g4 by ANTLR 4.7
-
+// Generated from MP5Db.g4 by ANTLR 4.7.1
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**
