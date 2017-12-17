@@ -1,132 +1,178 @@
 package ca.ece.ubc.cpen221.mp5;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Stack;
 
 public class MP5DbQueryListener extends MP5DbBaseListener{
 
     /**
-     * Rep Invariant: atomStack and operationStack must be non-null stacks of size greater or equal to 0.
-     * The size of operationStack must be at least the same size as atomStack (or larger).
+     * Rep Invariant: operationList must be a non-null list of size greater or equal to 0 during initialization
+     * After evaluation, operationList size must be equal or greater to one, and odd. operationList must contain
+     * atomic strings (such as in(Location), or category(Genre), and operation strings (such as 1&& or 2||).
+     * At all times, operationList must alternate between an atomic string and operation string.
      *
-     * Abstraction Function: atomStack and operationStack map to an order of operations involving the MP5Db - YelpDB.
-     * Given two complete stacks (of atomStack and operationStack), one has to pop one element from the operationStack.
-     *
-     * If the element is an &&: expr = <currentDatabase> && topElement
-     *
-     * If the element is an ||: expr = <currentDatabase> && topElement1 + <currentDatabase> && topElement2
+     * Abstraction Function: an atomic string maps to an atomic statement in the form function(function_specifier).
+     * The operation strings map to a precedence value (denoted by parenthesisCount) in the form <precedence_value><OPERATION>
      */
-    private Stack <String> atomStack;
-    private Stack <String> operationStack;
+    private List<String> operationList;
+
+    private int parenthesisCount = 0;
+    private int parenthesisMax = 0;
 
     public MP5DbQueryListener() {
-        // Initialize Stack elements
-        this.atomStack = new Stack();
-        this.operationStack = new Stack();
+        this.operationList = new ArrayList<>();
     }
 
     /**
-     * Generates a copy of the current state atomStack and returns it.
+     * Generates a copy of the current state operationList and returns it.
      *
-     * @return Stack<String> of structured query atoms
+     * @return the list of structured query operations
      */
-    public Stack getAtomStack() {
-        return copyStack(atomStack);
+    public synchronized List<String> getOperationList() {
+        return new ArrayList<>(operationList);
     }
 
-    /**
-     * Generates a copy of the current state operationStack and returns it.
-     *
-     * @return Stack<String> of structured query operations
-     */
-    public Stack getOperationStack() {
-        return copyStack(operationStack);
-    }
 
-    /**
-     * Copies an input stack and returns a new equivalent stack of it.
-     *
-     * @param inputStack to be copied
-     *
-     * @return identical specification, address independent stack
-     */
-    private Stack<String> copyStack(Stack inputStack) {
-        return null;
+    public synchronized int getParenthesisMax() {
+        return parenthesisMax;
     }
 
     /**
      * An 'or' node was exited. Add an 'or' operation to the operation stack.
      */
-    public void exitOr(MP5DbParser.OrContext ctx) {
+    public synchronized void exitOr(MP5DbParser.OrContext ctx) {
         // Debug
-        System.err.println(ctx.getText());
+        // System.err.println(ctx.getText());
 
-        // Push to operationStack
-        operationStack.push(ctx.getText());
+        // Generate operationStack string
+        String operationString = "";
+
+        operationString = operationString + parenthesisCount;
+        operationString = operationString + ctx.getText();
+
+        if (parenthesisCount > parenthesisMax)
+            parenthesisMax = parenthesisCount;
+
+        operationList.add(operationString);
+
 
     }
 
     /**
      * An 'and' node was exited. Add an 'and' operation to the operation stack.
      */
-    public void exitAnd(MP5DbParser.AndContext ctx) {
+    public synchronized void exitAnd(MP5DbParser.AndContext ctx) {
         // Debug
-        System.err.println(ctx.getText());
+        // System.err.println(ctx.getText());
 
-        // Push to operationStack
-        operationStack.push(ctx.getText());
+
+        // Generate operationStack string
+        String operationString = "";
+
+        operationString = operationString + parenthesisCount;
+        operationString = operationString + ctx.getText();
+
+        if (parenthesisCount > parenthesisMax)
+            parenthesisMax = parenthesisCount;
+
+        operationList.add(operationString);
     }
 
     /**
      * The atomic operation 'in' was exited. Add data to the atom stack.
      */
-    public void exitIn(MP5DbParser.InContext ctx) {
+    public synchronized void exitIn(MP5DbParser.InContext ctx) {
         // Debug
-        System.err.println(ctx.getText());
+        // System.err.println(ctx.getText());
 
-        // Push to atomStack
-        atomStack.push(ctx.getText());
+        // Add to atomStack
+        operationList.add(ctx.getText());
     }
 
     /**
      * The atomic operation 'category' was exited. Add data to the atom stack.
      */
-    public void exitCategory(MP5DbParser.CategoryContext ctx) {
-        System.err.println(ctx.getText());
+    public synchronized void exitCategory(MP5DbParser.CategoryContext ctx) {
+        // Debug
+        // System.err.println(ctx.getText());
 
-        // Push to atomStack
-        atomStack.push(ctx.getText());
+        // Add to atomStack
+        operationList.add(ctx.getText());
     }
 
     /**
      * The atomic operation 'rating' was exited. Add data to the atom stack.
      */
-    public void exitRating(MP5DbParser.RatingContext ctx) {
+    public synchronized void exitRating(MP5DbParser.RatingContext ctx) {
         // Debug
-        System.err.println(ctx.getText());
+        // System.err.println(ctx.getText());
 
-        // Push to atomStack
-        atomStack.push(ctx.getText());
+        // Add to atomStack
+        operationList.add(ctx.getText());
     }
 
     /**
      * The atomic operation 'parser' was exited. Add data to the atom stack.
      */
-    public void exitPrice(MP5DbParser.PriceContext ctx) {
+    public synchronized void exitPrice(MP5DbParser.PriceContext ctx) {
         // Debug
-        System.err.println(ctx.getText());
+        // System.err.println(ctx.getText());
 
-        // Push to atomStack
-        atomStack.push(ctx.getText());
+        // Add to atomStack
+        operationList.add(ctx.getText());
     }
 
     /**
      * The atomic operation 'name' was exited. Add data to the atom stack.
      */
-    public void exitName(MP5DbParser.NameContext ctx) {
+    public synchronized void exitName(MP5DbParser.NameContext ctx) {
         // Debug
-        System.err.println(ctx.getText());
+        // System.err.println(ctx.getText());
 
-        // Push to atomStack
-        atomStack.push(ctx.getText());
+        // Add to atomStack
+        operationList.add(ctx.getText());
     }
+
+    public synchronized void exitAndExpr(MP5DbParser.AndExprContext ctx) {
+        // Debug
+        // System.err.println("Exit AndExpr " + ctx.getText());
+
+        parenthesisCount--;
+    }
+
+    public synchronized void exitOrExpr(MP5DbParser.OrExprContext ctx) {
+        // Debug
+        // System.err.println("Exit OrExpr " + ctx.getText());
+
+        parenthesisCount--;
+    }
+
+    public synchronized void enterAndExpr(MP5DbParser.AndExprContext ctx) {
+        // Debug
+        // System.err.println("Enter AndExpr " + ctx.getText());
+
+        parenthesisCount++;
+    }
+
+    public synchronized void enterOrExpr(MP5DbParser.OrExprContext ctx) {
+        // Debug
+        // System.err.println("Enter OrExpr " + ctx.getText());
+
+        parenthesisCount++;
+    }
+
+    /**
+     * Send a debug log to console outlining the contents of atomList, and operationList
+     */
+    /*
+    public synchronized void checkContents() {
+        System.out.println("Current Operation List:");
+        System.out.println("parenthesisMax = " + parenthesisMax);
+        for (String currOperation: operationList) {
+            System.out.println(currOperation);
+        }
+    }
+    */
 }
