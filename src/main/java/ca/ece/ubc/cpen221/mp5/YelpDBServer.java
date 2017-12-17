@@ -58,7 +58,7 @@ public class YelpDBServer {
 		}
 	}
 
-	private synchronized void handle(Socket socket) throws IOException {
+	private void handle(Socket socket) throws IOException {
 		System.err.println("client connected");
 
 		// get the socket's input stream, and wrap converters around it
@@ -130,10 +130,13 @@ public class YelpDBServer {
 					// Convert JsonObject userInfo to JSON format String
 					final String addUserJSON = db.serverAddUser(userInfo);
 					out.println(addUserJSON);
+				} else {
+					out.println("ERR: ILLEGAL_REQUEST");
 				}
-
+				System.out.println("for loop iteration");
 			}
 		} finally {
+			System.out.println("finally: client thread closed");
 			out.close();
 			in.close();
 		}

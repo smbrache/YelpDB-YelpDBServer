@@ -45,7 +45,7 @@ public class RestaurantTest {
         assertEquals(-122.260408, restaurantTest.getLongitude());
         assertEquals("CA", restaurantTest.getState());
         assertEquals("Berkeley", restaurantTest.getCity());
-        assertEquals("2400 Durant Ave\nTelegraph Ave\nBerkeley, CA 94701", restaurantTest.getFullAddress());
+        assertEquals("2400 Durant Ave, Telegraph Ave, Berkeley, CA 94701", restaurantTest.getFullAddress());
         assertEquals(true, restaurantTest.getSchools().contains("University of California at Berkeley"));
 
         assertEquals("Cafe 3", restaurantTest.getName());
