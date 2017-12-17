@@ -3,6 +3,7 @@ package ca.ece.ubc.cpen221.mp5.tests;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -13,7 +14,6 @@ import ca.ece.ubc.cpen221.mp5.YelpDBServer;
 
 public class YelpDBServerTest {
 
-	YelpDB db;
 	YelpDBServer dbServer;
 	YelpDBClient client1;
 	YelpDBClient client2;
@@ -21,36 +21,57 @@ public class YelpDBServerTest {
 	YelpDBClient client4;
 	boolean server = false;
 
-	Thread t1 = new Thread(new Runnable() {
+	
+	Thread testServer = new Thread (new Runnable() {
 		public void run() {
-			YelpDBServer.main(null);
+			try {
+				YelpDBServer server = new YelpDBServer(YelpDBServer.YELPDB_PORT);
+				server.serve();
+			} catch (IOException e) {
+					
+			}
 		}
+			
 	});
 	
+//	Thread t1 = new Thread(new Runnable() {
+//		public void run() {
+//			YelpDBServer.main(null);
+//			server = true;
+//		}
+//
+//
+//	});
+
 	@Before
 	public void setUp() {
-		if(!server) {
-			t1.start();
-			for(int i = 0; i < 5000000; i++) {}
-			server = true;
-		}
-		
-		try {
-			
-			// Create multiple clients
-			client1 = new YelpDBClient("localhost", YelpDBServer.YELPDB_PORT);
-			client2 = new YelpDBClient("localhost", YelpDBServer.YELPDB_PORT);
-			client3 = new YelpDBClient("localhost", YelpDBServer.YELPDB_PORT);
-			client4 = new YelpDBClient("localhost", YelpDBServer.YELPDB_PORT);
 
-		} catch (IOException e) {
-			e.printStackTrace();
+		if (!server) {
+			testServer.start();
+			try {
+				TimeUnit.SECONDS.sleep(1);
+			} catch (InterruptedException e) {
+				
+			}
+			
+			try {
+
+				// Create multiple clients
+				client1 = new YelpDBClient("localhost", YelpDBServer.YELPDB_PORT);
+				client2 = new YelpDBClient("localhost", YelpDBServer.YELPDB_PORT);
+				client3 = new YelpDBClient("localhost", YelpDBServer.YELPDB_PORT);
+				client4 = new YelpDBClient("localhost", YelpDBServer.YELPDB_PORT);
+
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
+
 	}
 
 	@Test
 	public void test01() {
-				
+
 		try {
 
 			// Send ADDRESTAURANT requests for all clients, different restaurants
@@ -177,7 +198,7 @@ public class YelpDBServerTest {
 			System.out.println("got Restaurant3 JSON: " + getRestReply3);
 			String getRestReply4 = client4.getReply();
 			System.out.println("got Restaurant4 JSON: " + getRestReply4);
-			
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -208,7 +229,7 @@ public class YelpDBServerTest {
 			System.out.println("got Review3 JSON: " + getReviewReply3);
 			String getReviewReply4 = client4.getReply();
 			System.out.println("got Review4 JSON: " + getReviewReply4);
-			
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -239,7 +260,7 @@ public class YelpDBServerTest {
 			System.out.println("got User3 JSON: " + getUserReply3);
 			String getUserReply4 = client4.getReply();
 			System.out.println("got User4 JSON: " + getUserReply4);
-			
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

@@ -27,9 +27,9 @@ public class YelpDBServer {
 	// TODO data in handle()
 
 	// added a YelpDB to the constructor
-	public YelpDBServer(YelpDB db, int portNumber) throws IOException {
+	public YelpDBServer(int portNumber) throws IOException {
 		this.serverSocket = new ServerSocket(portNumber);
-		this.db = db;
+		this.db = new YelpDB("data/restaurants.json", "data/reviews.json", "data/users.json");
 	}
 
 	public void serve() throws IOException {
@@ -86,6 +86,7 @@ public class YelpDBServer {
 				if (command.equals("GETRESTAURANT")) {
 					String businessID = info;
 					final String restaurantJSON = db.getRestaurantJSON(businessID);
+					System.err.println("-----------------------------------------------------------------------");
 					out.println(restaurantJSON);
 
 				} else if (command.equals("GETUSER")) {
@@ -100,14 +101,15 @@ public class YelpDBServer {
 
 				} else if (command.equals("ADDRESTAURANT")) {
 					String restInfo = info;
-
+					
 					// parse info into JsonObject restaurantInfo
 					JsonReader parseRestaurant = Json.createReader(new StringReader(restInfo));
 					JsonObject restaurantInfo = parseRestaurant.readObject();
-
+					
 					// Convert JsonObject restaurantInfo to JSON format String
 					final String addRestoJSON = db.serverAddRestaurant(restaurantInfo);
 					out.println(addRestoJSON);
+					
 
 				} else if (command.equals("ADDREVIEW")) {
 					String revInfo = info;
@@ -139,22 +141,6 @@ public class YelpDBServer {
 			System.out.println("finally: client thread closed");
 			out.close();
 			in.close();
-		}
-
-	}
-
-	/**
-	 * Start a YelpDBServer running on the default port.
-	 */
-	public static void main(String[] args) {
-		YelpDB db;
-
-		try {
-			db = new YelpDB("data/restaurants.json", "data/reviews.json", "data/users.json");
-			YelpDBServer server = new YelpDBServer(db, YelpDBServer.YELPDB_PORT);
-			server.serve();
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 }
