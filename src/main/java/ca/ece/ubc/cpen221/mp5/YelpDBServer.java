@@ -4,6 +4,8 @@ import java.io.*;
 import java.math.BigInteger;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -17,7 +19,7 @@ public class YelpDBServer {
 
 	private YelpDB db;
 
-	// Rep invariant: serverSocket != null
+	// Rep invariant: serverSocket, db != null
 	//
 	// Thread safety argument:
 	// TODO YELPDB_PORT
@@ -26,7 +28,6 @@ public class YelpDBServer {
 	// TODO readers and writers in handle()
 	// TODO data in handle()
 
-	// added a YelpDB to the constructor
 	public YelpDBServer(int portNumber) throws IOException {
 		this.serverSocket = new ServerSocket(portNumber);
 		this.db = new YelpDB("data/restaurants.json", "data/reviews.json", "data/users.json");
@@ -59,7 +60,6 @@ public class YelpDBServer {
 	}
 
 	private void handle(Socket socket) throws IOException {
-		System.err.println("client connected");
 
 		// get the socket's input stream, and wrap converters around it
 		// that convert it from a byte stream to a character stream,
@@ -75,41 +75,41 @@ public class YelpDBServer {
 			// each request is a single line: a command followed by info which are separated
 			// by a single space
 			for (String line = in.readLine(); line != null; line = in.readLine()) {
-				System.err.println("request: " + line);
 
 				// break up request into command and info
 				final String command = line.substring(0, line.indexOf(' ')).trim();
 				final String info = line.substring(line.indexOf(' '), line.length()).trim();
 
-			// removed try-catch block here, should we have a format exception?
-				// figure out what the command is
+				// figure out what the command is and act accordingly
 				if (command.equals("GETRESTAURANT")) {
 					String businessID = info;
 					final String restaurantJSON = db.getRestaurantJSON(businessID);
-					System.err.println("-----------------------------------------------------------------------");
 					out.println(restaurantJSON);
+					break;
 
 				} else if (command.equals("GETUSER")) {
 					String userID = info;
 					final String userJSON = db.getUserJSON(userID);
 					out.println(userJSON);
+					break;
 
 				} else if (command.equals("GETREVIEW")) {
 					String reviewID = info;
 					final String reviewJSON = db.getReviewJSON(reviewID);
 					out.println(reviewJSON);
+					break;
 
 				} else if (command.equals("ADDRESTAURANT")) {
 					String restInfo = info;
-					
+
 					// parse info into JsonObject restaurantInfo
 					JsonReader parseRestaurant = Json.createReader(new StringReader(restInfo));
 					JsonObject restaurantInfo = parseRestaurant.readObject();
-					
+
 					// Convert JsonObject restaurantInfo to JSON format String
 					final String addRestoJSON = db.serverAddRestaurant(restaurantInfo);
 					out.println(addRestoJSON);
-					
+					break;
 
 				} else if (command.equals("ADDREVIEW")) {
 					String revInfo = info;
@@ -121,6 +121,7 @@ public class YelpDBServer {
 					// Convert JsonObject reviewInfo to JSON format String
 					final String addReviewJSON = db.serverAddReview(reviewInfo);
 					out.println(addReviewJSON);
+					break;
 
 				} else if (command.equals("ADDUSER")) {
 					String usrInfo = info;
@@ -132,13 +133,35 @@ public class YelpDBServer {
 					// Convert JsonObject userInfo to JSON format String
 					final String addUserJSON = db.serverAddUser(userInfo);
 					out.println(addUserJSON);
+					break;
+
+				} else if (command.equals("QUERY")) {
+					String queryInfo = info;
+					
+					// Make a new structured query from the info String, store resulting list of the
+					// operation in restList
+					StructuredQuery s = new StructuredQuery(queryInfo, db.getRestaurantAll());
+					List<Restaurant> restList = s.getResults();
+
+					// Generate Json Strings for appropriate Restaurants and store them in restJsonList
+					List<String> restJsonList = new ArrayList<String>();
+					String currRestJsonString = "";
+					String currRestBizID = "";
+					for (int i = 0; i < restList.size(); i++) {
+						currRestBizID = restList.get(i).getBusinessId();
+						currRestJsonString = db.getRestaurantJSON(currRestBizID);
+						restJsonList.add(currRestJsonString);
+					}
+					
+					out.println(restJsonList);
+					break;
+
 				} else {
-					out.println("ERR: ILLEGAL_REQUEST");
+					System.out.println("ERR: ILLEGAL_REQUEST");
+					break;
 				}
-				System.out.println("for loop iteration");
 			}
 		} finally {
-			System.out.println("finally: client thread closed");
 			out.close();
 			in.close();
 		}

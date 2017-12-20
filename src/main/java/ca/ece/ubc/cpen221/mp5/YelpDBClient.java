@@ -32,12 +32,12 @@ public class YelpDBClient {
      * @param request request to send to YelpDBServer
      * @throws IOException if network or server failure
      */
-    public synchronized void sendRequest(String request) throws IOException {
+    public void sendRequest(String request) throws IOException {
         out.println(request);
-        out.flush(); // important! make sure x actually gets sent
+        out.flush();
     }
     
-    public synchronized String getReply() throws IOException {
+    public String getReply() throws IOException {
         String reply = in.readLine();
         if (reply == null) {
             throw new IOException("connection terminated unexpectedly");
