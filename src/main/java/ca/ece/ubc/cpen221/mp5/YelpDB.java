@@ -754,40 +754,6 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 	}
 
 	/**
-	 * Adds a Restaurant to restaurantAll if the Restaurant doesn't already exist.
-	 * 
-	 * @requires: newRestaurant is not null
-	 *
-	 * @effects: adds newRestaurant to restaurantAll if newRestaurant is not already
-	 *           in restaurantAll
-	 * 
-	 * @param newRestaurant
-	 *            the Restaurant to add.
-	 */
-	public void addRestaurant(Restaurant newRestaurant) {
-		if (!restaurantAll.contains(newRestaurant)) {
-			restaurantAll.add(newRestaurant);
-		}
-	}
-
-	/**
-	 * Adds a Review to reviewAll if the Review doesn't already exist.
-	 * 
-	 * @requires: newReview is not null
-	 *
-	 * @effects: adds newReview to reviewAll if newReview is not already in
-	 *           reviewAll
-	 * 
-	 * @param newReview
-	 *            the Review to add.
-	 */
-	public void addReview(Review newReview) {
-		if (!reviewAll.contains(newReview)) {
-			reviewAll.add(newReview);
-		}
-	}
-
-	/**
 	 * Adds a user to userAll if the user doesn't already exist.
 	 * 
 	 * @requires: newUser is not null
