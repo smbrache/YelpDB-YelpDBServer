@@ -34,7 +34,7 @@ public class Restaurant {
 
     /* Ranking filter value (user-review driven statistic) */
     private int reviewCount;
-    private final double starScore;
+    private double starScore;
     private final int priceScore;
 
     /* Review collection */
@@ -84,8 +84,10 @@ public class Restaurant {
         this.name = name;
         this.categories = categories;
 
-        this.starScore = starScore;
-        this.reviewCount = reviewCount;
+        // this.starScore = starScore;
+        this.starScore = 0;
+        // this.reviewCount = reviewCount;
+        this.reviewCount = 0;
         this.photoURL = photoURL;
         this.priceScore = priceScore;
 
@@ -124,6 +126,13 @@ public class Restaurant {
     public void addReview(Review inputReview) {
         // inputReview must not be null
         restaurantReviews.add(inputReview);
+
+        // Adjust database values
+        double tempReviewTotal = starScore*reviewCount;
+        tempReviewTotal += inputReview.getStars();
+        reviewCount++;
+
+        starScore = tempReviewTotal/reviewCount;
     }
 
     /**

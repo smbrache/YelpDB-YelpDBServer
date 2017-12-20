@@ -57,7 +57,7 @@ public class RestaurantTest {
 
         assertEquals(9, restaurantTest.getReviewCount());
         assertEquals(1, restaurantTest.getPriceScore());
-        assertEquals(2.0, restaurantTest.getStarScore());
+        assertEquals(2.111111111111111, restaurantTest.getStarScore());
 
         // Test review storage
         assertEquals("53glrLS3YJGEucPd1XdH1Q", restaurantTest.getRestaurantReviews().get(0).getReviewId());

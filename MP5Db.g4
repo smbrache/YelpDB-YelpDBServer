@@ -1,12 +1,12 @@
 // MP5Db ANTLR4 Query
 //
 // Written according to the MP5 'Part V: Structured Queries' specification.
- 
+
 grammar MP5Db;
 
 root
 	:	orExpr SPACE* EOF
-	; 
+	;
 orExpr
 	:	andExpr (or andExpr)*
 	;
@@ -37,7 +37,7 @@ lt
 lte
 	:	'<='
 	;
-eq 	
+eq
 	:	'='
 	;
 in
@@ -61,16 +61,16 @@ LParen
 RParen
 	:	')'
 	;
-NUM 
+NUM
 	:	[1-5]
 	;
 STRING
 	:	WORD (STRINGSPACE WORD)*
 	;
 WORD
-	:	[a-zA-Z]+
+	:	[a-zA-Z0-9]+
 	;
-SPACE	
+SPACE
 	: 	[ \t\r\n]+ -> skip
 	;
 STRINGSPACE

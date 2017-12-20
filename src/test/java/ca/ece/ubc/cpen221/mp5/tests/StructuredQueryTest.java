@@ -76,27 +76,27 @@ public class StructuredQueryTest {
         // Single atom (no AND/OR operator) functionality on all inequality functions for rating
         StructuredQuery sQ3a = new StructuredQuery("rating < 3", yDB.getRestaurantAll());
         // There are  entries in restaurants.json with 'rating < 3'
-        assertEquals( 15, sQ3a.getResults().size());
+        assertEquals( 27, sQ3a.getResults().size());
 
         // Single atom (no AND/OR operator) functionality on all inequality functions for rating
         StructuredQuery sQ3b = new StructuredQuery("rating <= 3", yDB.getRestaurantAll());
         // There are  entries in restaurants.json with 'rating < 3'
-        assertEquals( 45, sQ3b.getResults().size());
+        assertEquals( 28, sQ3b.getResults().size());
 
         // Single atom (no AND/OR operator) functionality on all inequality functions for rating
         StructuredQuery sQ3c = new StructuredQuery("rating = 3", yDB.getRestaurantAll());
         // There are 30 entries in restaurants.json with 'rating < 3
-        assertEquals( 30, sQ3c.getResults().size());
+        assertEquals( 1, sQ3c.getResults().size());
 
         // Single atom (no AND/OR operator) functionality on all inequality functions for rating
         StructuredQuery sQ3d = new StructuredQuery("rating >= 3", yDB.getRestaurantAll());
         // There are 120 entries in restaurants.json with 'rating < 3'
-        assertEquals( 120, sQ3d.getResults().size());
+        assertEquals( 108, sQ3d.getResults().size());
 
         // Single atom (no AND/OR operator) functionality on all inequality functions for rating
         StructuredQuery sQ3e = new StructuredQuery("rating > 3", yDB.getRestaurantAll());
         // There are 90 entries in restaurants.json with 'rating < 3'
-        assertEquals( 90, sQ3e.getResults().size());
+        assertEquals( 107, sQ3e.getResults().size());
     }
 
     @Test
