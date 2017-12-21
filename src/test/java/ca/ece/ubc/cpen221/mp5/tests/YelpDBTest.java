@@ -30,25 +30,18 @@ public class YelpDBTest {
 		try {
 			db = new YelpDB("data/restaurants.json", "data/reviews.json", "data/users.json");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		// First part of kMeans test, test that kMeansClustering() clusters Restaurants
-		// correctly and
-		// returns a properly structured List<Set<Restaurants>>
-		List<Set<Restaurant>> kMClusters = db.kMeansClustering(10);
-
 		List<double[]> centroidList = new ArrayList<double[]>();
 		double[] centroidCoords = new double[2];
-		int entryNum = 1;
 
 		// for each centroid-cluster pair
 		for (Map.Entry<double[], Set<Restaurant>> clusterMapEntry : db.centroidClusterMap.entrySet()) {
 
+			// For debugging:
 			// print restaurants in the cluster
-			// System.out.println("cluster " + entryNum + ": " +
-			// clusterMapEntry.getValue().toString());
+			// System.out.println("cluster: " + clusterMapEntry.getValue().toString());
 			// System.out.println();
 
 			// put the centroid in centroidList
@@ -88,7 +81,6 @@ public class YelpDBTest {
 
 			} // end for all restaurants
 
-			entryNum++;
 		} // end for all map entries
 
 	}

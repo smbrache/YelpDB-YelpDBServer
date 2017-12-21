@@ -1,7 +1,6 @@
 package ca.ece.ubc.cpen221.mp5;
 
 import java.io.*;
-import java.math.BigInteger;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -14,19 +13,10 @@ import javax.json.JsonReader;
 public class YelpDBServer {
 
 	public static final int YELPDB_PORT = 4949;
-
 	private ServerSocket serverSocket;
-
 	private YelpDB db;
 
-	// Rep invariant: serverSocket, db != null
-	//
-	// Thread safety argument:
-	// TODO YELPDB_PORT
-	// TODO serverSocket
-	// TODO socket objects
-	// TODO readers and writers in handle()
-	// TODO data in handle()
+	// Rep invariant: serverSocket != null
 
 	public YelpDBServer(int portNumber) throws IOException {
 		this.serverSocket = new ServerSocket(portNumber);
@@ -59,6 +49,15 @@ public class YelpDBServer {
 		}
 	}
 
+	/**
+	 * Performs tasks to fulfill requests from a client
+	 * 
+	 * @param socket
+	 *            the server-side socket that receives a request from the client and
+	 *            sends a reply to the client
+	 * @throws IOException
+	 *             if the connection is terminated unexpectedly
+	 */
 	private void handle(Socket socket) throws IOException {
 
 		// get the socket's input stream, and wrap converters around it
@@ -137,13 +136,14 @@ public class YelpDBServer {
 
 				} else if (command.equals("QUERY")) {
 					String queryInfo = info;
-					
+
 					// Make a new structured query from the info String, store resulting list of the
 					// operation in restList
 					StructuredQuery s = new StructuredQuery(queryInfo, db.getRestaurantAll());
 					List<Restaurant> restList = s.getResults();
 
-					// Generate Json Strings for appropriate Restaurants and store them in restJsonList
+					// Generate Json Strings for appropriate Restaurants and store them in
+					// restJsonList
 					List<String> restJsonList = new ArrayList<String>();
 					String currRestJsonString = "";
 					String currRestBizID = "";
@@ -152,16 +152,19 @@ public class YelpDBServer {
 						currRestJsonString = db.getRestaurantJSON(currRestBizID);
 						restJsonList.add(currRestJsonString);
 					}
-					
+
 					out.println(restJsonList);
 					break;
 
 				} else {
+					// If the command in the request is none of those recognized above, print an
+					// error message
 					System.out.println("ERR: ILLEGAL_REQUEST");
 					break;
 				}
 			}
 		} finally {
+			// close the socket once a reply has been sent
 			out.close();
 			in.close();
 		}

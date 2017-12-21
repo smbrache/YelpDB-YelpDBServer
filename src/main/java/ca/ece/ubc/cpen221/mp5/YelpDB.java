@@ -807,8 +807,8 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 		}
 
 		// if the restaurant does not exist return a specific "null Restaurant"
-		return new Restaurant(true, "null", 0.0, new ArrayList<String>(), "null", "null", new ArrayList<String>(), "null", "null", 0.0,
-				"null", "null", 0, "null", new ArrayList<String>(), 0.0, 0);
+		return new Restaurant(true, "null", 0.0, new ArrayList<String>(), "null", "null", new ArrayList<String>(),
+				"null", "null", 0.0, "null", "null", 0, "null", new ArrayList<String>(), 0.0, 0);
 	}
 
 	/**
@@ -838,17 +838,19 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 	 * Gets the info of a Restaurant in the YelpDB, and returns it in a JSON format
 	 * String.
 	 * 
+	 * requires: reqBusinessID is not null
+	 * 
 	 * @param reqBusinessID
 	 *            the businessID of the Restuarant whose info to return
 	 * @return the String in JSON format of the Restaurant's info
 	 */
 	public synchronized String getRestaurantJSON(String reqBusinessID) {
-		// TODO: Error handling
 		Restaurant reqRest = this.searchRestaurant(reqBusinessID);
-		
+
 		// if the restaurant does not exist return an error message
-		if(reqRest.equals(new Restaurant(true, "null", 0.0, new ArrayList<String>(), "null", "null", new ArrayList<String>(), "null", "null", 0.0,
-				"null", "null", 0, "null", new ArrayList<String>(), 0.0, 0))) {
+		if (reqRest.equals(
+				new Restaurant(true, "null", 0.0, new ArrayList<String>(), "null", "null", new ArrayList<String>(),
+						"null", "null", 0.0, "null", "null", 0, "null", new ArrayList<String>(), 0.0, 0))) {
 			return "ERR: NO_SUCH_RESTAURANT";
 		}
 
@@ -891,7 +893,8 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 		schools = schools + "]";
 
 		// resume formatting the reqRestJSON String
-		reqRestJSON += schools + ", \"latitude\": " + reqRest.getLatitude() + ", \"price\": " + reqRest.getPriceScore() + "}";
+		reqRestJSON += schools + ", \"latitude\": " + reqRest.getLatitude() + ", \"price\": " + reqRest.getPriceScore()
+				+ "}";
 
 		return reqRestJSON;
 	}
@@ -900,12 +903,13 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 	 * Gets the info of a User in the YelpDB, and returns it in a JSON format
 	 * String.
 	 * 
+	 * requires: re1UserID is not null
+	 * 
 	 * @param reqUserID
 	 *            the userID of the User whose info to return
 	 * @return the String in JSON format of the User's info
 	 */
 	public synchronized String getUserJSON(String reqUserID) {
-		// TODO: Error handling
 		User reqUser = this.searchUser(reqUserID);
 
 		// If the user does not exist return an error message
@@ -931,12 +935,13 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 	 * Gets the info of a Review in the YelpDB, and returns it in a JSON format
 	 * String.
 	 * 
+	 * requires: reqReviewID is not null
+	 * 
 	 * @param reqReviewID
 	 *            the reviewID of the Review whose info to return
 	 * @return the String in JSON format of the Review's info
 	 */
 	public synchronized String getReviewJSON(String reqReviewID) {
-		// TODO: Error handling
 		Review reqReview = this.searchReview(reqReviewID);
 
 		// if the review does not exist return an error message
@@ -963,6 +968,9 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 	 * Adds a restaurant to the database via a YelpDBServer request, and returns a
 	 * String in JSON format containing the info of the created Restaurant.
 	 * 
+	 * requires: no elements of the JsonObject are null and the Restaurant to be
+	 * added doesn't already exist
+	 * 
 	 * @param restaurantInfo
 	 *            the JsonObject containing information about the Restaurant that
 	 *            exists without the database
@@ -970,10 +978,6 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 	 *         Restaurant
 	 */
 	public synchronized String serverAddRestaurant(JsonObject restaurantInfo) {
-		// TODO: Error handling
-		// ____________ must not be null and not already present in the database
-
-		// These values are read from the JSON format String given to the server ------------- how to check/handle if they are null or not passed?
 		double longitude = restaurantInfo.getJsonNumber("longitude").doubleValue();
 		double latitude = restaurantInfo.getJsonNumber("latitude").doubleValue();
 		String state = restaurantInfo.getString("state");
@@ -1013,21 +1017,22 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 		Restaurant newRestaurant = new Restaurant(isOpen, url, longitude, neighborhoods, businessID, name, categories,
 				state, type, starScore, city, fullAddress, reviewCount, photoURL, schools, latitude, priceScore);
 
-		// could change this to iterate through the list and check if the businessID
-		// already exists in the list,
-		// if the restaurant is added then reviewed, and a duplicate restaurant is
-		// added, it wouldn't be caught and prevented
+		// If the new Restaurant doesn't exist, add it to the database
 		if (!this.restaurantAll.contains(newRestaurant)) {
 			this.restaurantAll.add(newRestaurant);
 			return this.getRestaurantJSON(newRestaurant.getBusinessId());
 		}
 
+		// If the Restaurant already exists, return an error message
 		return "ERR: INVALID_RESTAURANT_STRING";
 	}
 
 	/**
 	 * Adds a Review to the database via a YelpDBServer request, and returns a
 	 * String in JSON format containing the info of the created Review.
+	 * 
+	 * requires: no elements of the JsonObject are null and the Review to be added
+	 * doesn't already exist
 	 * 
 	 * @param reviewInfo
 	 *            the JsonObject containing information about the Review that is not
@@ -1036,10 +1041,6 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 	 *         Review
 	 */
 	public synchronized String serverAddReview(JsonObject reviewInfo) {
-		// TODO: Error handling
-		// _________must not be null and not already be present in the database
-
-		// These values are read from the JSON format String given to the server------------- how to check/handle if they are null or not passed?
 		String text = reviewInfo.getString("text");
 		String userID = reviewInfo.getString("user_id");
 		String date = reviewInfo.getString("date");
@@ -1047,7 +1048,7 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 
 		// These values are generated by YelpDB and assigned to the new Review
 		String type = "review";
-		String reviewID = userID + "--" + businessID;// ------- ------ ------- ------ Is this ok? Should it be changed?
+		String reviewID = userID + "--" + businessID;
 		int starScore = 0;
 		// votes[0] = "cool"
 		// votes[1] = "useful"
@@ -1059,10 +1060,8 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 
 		Review newReview = new Review(type, businessID, votes, reviewID, text, starScore, userID, date);
 
-		// could change this to iterate through the list and check if the reviewID
-		// already exists in the list,
-		// if the review is added then voted on, and a duplicate review is added, it
-		// wouldn't be caught and prevented
+		// If the Review doesn't already exist, add it to the database and to its
+		// corresponding User's and Restaurant's Review lists
 		if (!reviewAll.contains(newReview)) {
 			reviewAll.add(newReview);
 
@@ -1084,6 +1083,7 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 			return this.getReviewJSON(reviewID);
 		}
 
+		// If the Review already exists return an error message 
 		return "ERR: INVALID_REVIEW_STRING";
 	}
 
@@ -1091,16 +1091,14 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 	 * Adds a User to the database via a YelpDBServer request, and returns a String
 	 * in JSON format containing the info of the created User.
 	 * 
+	 * requires: no elements of the JsonObject are null and the User to be added doesn't already exist
+	 * 
 	 * @param userInfo
 	 *            the JsonObject containing the name of the User
 	 * @return a String in JSON format containing all database info about the added
 	 *         User
 	 */
 	public synchronized String serverAddUser(JsonObject userInfo) {
-		// TODO: Error handling
-		// ________ must not be null and not already be present in the database
-
-		// User's name is read from the JSON format String given to the server------------- how to check/handle if it is null or not passed?
 		String name = userInfo.getString("name");
 
 		// These values are generated by YelpDB and assigned to the new User
@@ -1119,11 +1117,13 @@ public class YelpDB extends AbstractMP5Db<Restaurant> {
 
 		User newUser = new User(url, votes, reviewCount, type, userID, name, avgStars);
 
+		// If the User doesn't already exist add it to the database
 		if (!userAll.contains(newUser)) {
 			userAll.add(newUser);
 			return this.getUserJSON(userID);
 		}
 
+		// If the User already exists return an error message
 		return "ERR: INVALID_USER_STRING";
 	}
 }
