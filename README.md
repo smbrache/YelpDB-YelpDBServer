@@ -1,109 +1,21 @@
-CPEN 221 / Machine Problem 5
 
 Restaurants, Queries and Statistical Learning
 ===
 
-This machine problem is designed to allow you to explore multiple aspects of software construction:
+This code is from an Assignment completed in December 2017 done with a partner. It deals with multiple aspects of software construction:
 + managing complex ADTs;
 + multithreading and the client-server pattern;
 + query parsing and execution.
 
-In addition to these aspects, the problem also touches upon rudimentary methods for statistical inference and learning.
-
-**Read this document carefully before you start.**
-
-### Logistics
-
-+ You should complete this assignment in pairs.
-+ The submission deadline is December 1, 11:59pm Vancouver time.
-+ To get your Github repositories set up, using [this link](https://classroom.github.com/g/DIS5KaZf).
+It also touches upon rudimentary methods for statistical inference and learning, namely k-means clustering and least squares regression.
 
 ### Background
 
-For this machine problem, you will work with an excerpt from the [Yelp Academic Dataset](https://www.yelp.com/academic_dataset). Specifically, you will work with data (in [JSON](https://en.wikipedia.org/wiki/JSON) format) on restaurants, and this data includes information about some restaurants, reviews of the restaurants, and user information (for those contributing reviews).
+We worked with data from the [Yelp Academic Dataset](https://www.yelp.com/academic_dataset) in JSON format that contained information on some restaurants, reviews of the restaurants, and users who wrote those reviews.
 
-You will use the dataset to create and maintain a simple in-memory database with restaurants, users and reviews. (Since the Yelp Academic Dataset does not contain details of business near UBC we are using information for restaurants near UC Berkeley or UCB!)
+First, we parsed the JSON data to create an in-memory database (a `YelpDB`) with all restaurants, users and reviews. Then, we wrote methods to statistically analyze the data using k-means clustering and least squares regression. K-means clustering was used to group the restaurants into clusters within a city based on their longitude and latitude. This ideally allows us to group restaurants that are in the same neighbourhood in a city without knowledge of the neighbourhoods in a city. This [visualization](http://tech.nitoyon.com/en/blog/2013/11/07/k-means/) is a good way to understand how the algorithm works. Least squares regression was used to predict what rating out of five a user might give to a new restaurant based on their reviews of other restaurants and the price rating of those other restaurants. 
 
-The given dataset is in the JSON format and you can use the [JSON Processing project](https://jsonp.java.net) implementation of a framework for working with JSON in Java 8. Using such a framework requires that the Java compiler knows where to find the relevant files. A build manager like Gradle helps you indicate the JSON processing library as a dependency (for example, see [mvnrepository](https://mvnrepository.com/artifact/javax.json/javax.json-api/1.0-b01).) You may also want to read: [Gradle Dependency Management](https://docs.gradle.org/current/userguide/dependency_management.html).
-
-### Part I: A Database as a Datatype
-
-The first part of this machine problem is to build a datatype (`YelpDB`) that represents Yelp's restaurant dataset.
-
-At the minimum:
-
-+ This datatype must implement the `MP5Db` interface, and
-+ This datatype should have a constructor that takes three `String`s as arguments: these `Strings` represent filenames. The first file is the list of restaurants, the second file is the list of reviews and the third file is the user list.
-
-You should design this datatype to support a variety of useful operations. You have to decide on the representation for this datatype keeping extensibility (the ability to add new features and operations) in mind.
-
-To enable a reusable design, you many also want to examine some of the Amazon datasets (see [`http://jmcauley.ucsd.edu/data/amazon/`](http://jmcauley.ucsd.edu/data/amazon/)) and determine all the other datatypes you may need as well as useful subtype relationships. Think of simple types that can fit a variety of database situations and then subtype them to specialize for `YelpDB`.
-
-Before you start writing a lot of code, you should design the datatypes you want to create: what operations could these types support, what is a suitable representation and what are the rep invariants and abstraction functions. (You will have to document your design and discuss this with the instructor or a TA.) Think about enabling useful operations for your database and do not implement only the methods dictated by the `MP5Db` interface.
-
-For this part, complete a document called `Design.md` and place it in the main folder for your repository (where you would find this `README.md` file.) In this document, you should describe the choices you have made or plan on making. **This document should be available to the TAs and the instructor 12 hours ahead of your meeting with them.**
-
-### Part II: Statistical Learning
-
-In this part of the machine problem you will implement two approaches to statistical machine learning: one is an instance of unsupervised learning and the second is an instance of supervised learning. Statistical learning is an exciting area for computing today!
-
-The two operations that you have to support are also part of the `MP5Db` interface.
-
-#### k-means Clustering
-
-Suppose you are given a set of (x, y) coordinates, you may sometimes want to group the points into _k_ clusters such that no point is closer to the center point (centroid) of a cluster other than the one to which it is assigned. In the case of restaurants, this approach may allow us to group restaurants that are in the same neighbourhood even without knowing anything about the neighbourhoods in a city. _A similar approach is used to group similar products on online shopping services such as Amazon._
-
-The k-means algorithm finds k centroids within a dataset that each correspond to a cluster of inputs. To do so, k-means clustering begins by choosing k centroids at random, then alternates between the following two steps:
-
-1. Group the restaurants into clusters, where each cluster contains all restaurants that are closest to the same centroid.
-2. Compute a new centroid (average position) for each non-empty cluster.
-
-This [visualization](http://tech.nitoyon.com/en/blog/2013/11/07/k-means/) is a good way to understand how the algorithm works.
-
-For the k-means clustering algorithm, you should implement a method that returns a `List` of `Set`s: each `Set` represents a cluster of restaurants. You should also implement a method that converts such a `List` to JSON format as illustrated by the JSON file `voronoi.json` in the directory `visualize`. (In this format, the field `weight` denotes the size of the dot used in the visualization. You can use the same weight for all restaurants.)
-
-You can run the provided visualization method using `python` (Python 3) and the visualization is called a [Voronoi tesselation](https://en.wikipedia.org/wiki/Voronoi_diagram).
-
-> One can visualize the tessalation produced by k-means clustering by writing the JSON formatted cluster information to `voronoi.json` in the `visualize` directory and then launch `visualize.py` as follows: `python3 visualize.py`
-> For the curious, you can also see some Javascript in action here.
-
-#### Least Squares Regression
-
-As an instance of supervised learning, you will implement an algorithm for predicting the rating that a user may give to a restaurant.
-
-By analyzing a user's past ratings, we can try to predict what rating the user might give to a new restaurant.
-
-To predict ratings, you will implement simple least-squares linear regression, a widely used statistical method that approximates a relationship between some input feature (such as price) and an output value (the rating) with a line. The algorithm takes a sequence of input-output pairs and computes the slope and intercept of the line that minimizes the mean of the squared difference between the line and the outputs.
-
-Implement the `getPredictorFunction` method, which takes a user and returns a _function_ that predicts the users ratings. Use the restaurant's priciness as the feature (`x` values in the regression) to predict the user's rating (`y` values in the regression).
-
-One method of computing these values is by calculating the sums of squares, S<sub>xx</sub>, S<sub>yy</sub>, and S<sub>xy</sub>:
-
-+ S<sub>xx</sub> = Σ<sub>i</sub> (x<sub>i</sub> - mean(x))<sup>2</sup>
-+ S<sub>yy</sub> = Σ<sub>i</sub> (y<sub>i</sub> - mean(y))<sup>2</sup>
-+ S<sub>xy</sub> = Σ<sub>i</sub> (x<sub>i</sub> - mean(x))(y<sub>i</sub> - mean(y))
-
-After calculating the sums of squares, the regression coefficients, and R<sup>2</sup> (`r_squared`), which is an estimate of the quality of the predictor, are defined as follows:
-
-+ b = S<sub>xy</sub> / S<sub>xx</sub>
-+ a = mean(y) - b * mean(x)
-+ R<sup>2</sup> = S<sub>xy</sub><sup>2</sup> / (S<sub>xx</sub> S<sub>yy</sub>)
-
-In this machine problem, we will use a **[functional interface](https://docs.oracle.com/javase/8/docs/api/java/util/function/package-summary.html)** to return functions.
-
-### Part III: A YelpDB Server
-
-In the next part of this machine problem, you should implement a multi-threaded server application, `YelpDBServer` that wraps a `YelpDB` instance.
-
-One should be able to start the server from the command line using
-
-```
-java ca.ece.ubc.cpen221.mp5.YelpDBServer 4949
-```
-
-where `4949` is the port number at which the server should listen for connection requests. The server should use the command line argument to decide which port number to bind to.
-
-The server should be able to handle more than one connection at the same time (and hence the need for multithreading).
+The next part of the assignment was to implement a multi-threaded server (a server that can handle multiple connections at once) application, `YelpDBServer` that wraps a `YelpDB` instance. This server is able to get the JSON format information of any restaurant, review, or user in the YelpDB, or add a-------------------------------------------------------
 
 ### Part IV: Handling Simple Requests
 
