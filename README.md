@@ -2,7 +2,7 @@
 Databases, Statistical Learning, Servers and Queries 
 ===
 
-This code is from an Assignment completed in December 2017 done with a partner. It deals with multiple aspects of software construction:
+This code is from a project completed in December 2017 done with a partner. It deals with multiple aspects of software construction:
 + managing complex Abstract Data Types (ADTs);
 + multithreading and the client-server pattern;
 + query parsing and execution.
