@@ -33,7 +33,9 @@ The interesting aspect of this part is that when multiple clients are making req
 
 The final part of this project was to support structured queries over the database. The request-response pattern is again handled by the YelpDBServer. 
 
-A query sent to the server string may be: `QUERY in(Telegraph Ave) && (category(Chinese) || category(Italian)) && price <= 2`. This query string represents a query to obtain a list of Chinese and Italian restaurants in the Telegraph Avenue neighbourhood that have a price range of 1-2. For the query string above, The server would respond to this query with a list of restaurants in JSON notation. 
+A query sent to the server string may be: 
+`QUERY in(Telegraph Ave) && (category(Chinese) || category(Italian)) && price <= 2`. 
+This query string represents a query to obtain a list of Chinese and Italian restaurants in the Telegraph Avenue neighbourhood that have a price range of 1-2. For the query string above, The server would respond to this query with a list of restaurants in JSON notation. 
 
 ### Details
 
