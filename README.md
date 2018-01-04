@@ -9,7 +9,8 @@ This code is from an Assignment completed in December 2017 done with a partner. 
 
 It also touches upon rudimentary methods for statistical inference and learning, namely k-means clustering and least squares regression.
 
-### Background
+## Background
+
 
 We worked with data from the [Yelp Academic Dataset](https://www.yelp.com/academic_dataset) in JSON format that contained information on some restaurants, reviews of the restaurants, and users who wrote those reviews.
 
@@ -17,7 +18,7 @@ First, we parsed the JSON data to create an in-memory database (a `YelpDB`) with
 
 The next part of the assignment was to implement a multi-threaded server (a server that can handle multiple connections at once) application, `YelpDBServer` that wraps a `YelpDB` instance. This server is able to get the JSON format information of any restaurant, review, or user in the YelpDB, or add a-------------------------------------------------------
 
-### Part IV: Handling Simple Requests
+## Part IV: Handling Simple Requests
 
 The server should be able to handle some simple requests from a client that connects to it.
 
