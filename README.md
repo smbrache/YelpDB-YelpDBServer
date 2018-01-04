@@ -11,7 +11,7 @@ It also touches upon rudimentary methods for statistical inference and learning,
 
 ## First Part - YelpDB
 
-We worked with data from the [Yelp Academic Dataset](https://www.yelp.com/academic_dataset) in JSON format that contained information on some restaurants, reviews of the restaurants, and users who wrote those reviews to create an in-memory database (a "YelpDB"), and do some data analysis.
+In the first part of the project, we worked with data from the [Yelp Academic Dataset](https://www.yelp.com/academic_dataset) in JSON format that contained information on some restaurants, reviews of the restaurants, and users who wrote those reviews to create an in-memory database (a "YelpDB"), and do some data analysis.
 
 ### Details
 
