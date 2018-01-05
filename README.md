@@ -51,9 +51,9 @@ We thoroughly tested our project using JUnit test cases and Jacoco test coverage
 
 While I understand how each part of the project works, my partner and I divided the work for the project up so we would be able to complete it more efficiently. My contributions to the project are summarized below.
 
-* Wrote the YelpDB class and each of its methods excluding the least squares regression methods
-* Wrote the YelpDBServer class, its methods, and all methods it used in YelpDB 
-* Wrote the YelpDBClient class and its methods
+* Wrote the **YelpDB** class and each of its methods excluding the least squares regression methods
+* Wrote the **YelpDBServer** class, its methods, and all methods it used in YelpDB 
+* Wrote the **YelpDBClient** class and its methods
 * Integrated the functionality of the StructuredQuery class into the YelpDBServer class: allowed for clients to send a query to the server and receive an appropriate reply
 * Wrote thorough test cases for all methods I wrote to ensure correct program behavior 
 * Wrote deterministic specifications for all methods I coded and added explanatory comments in complex sections of code
